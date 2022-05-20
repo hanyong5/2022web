@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        /* reset  */
+        *{margin: 0;padding: 0;box-sizing: border-box;}
+        li{list-style: none;}
+        .clearfix:after{content:"";display: block;clear: both;}
+
+        .boxWrap{
+            width: 500px;height: 500px;
+            background-color:skyblue;
+            position: relative;margin: 0 auto;
+        }
+        .boxWrap div{width: 100px;height: 100px;}
+
+        .box1{
+            background-color: red;
+            position:absolute;
+            top:-50px;right:-100px
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="boxWrap">
+        <div class="box1"></div>
+    </div>
+</body>
+</html>
