@@ -15,9 +15,9 @@
             position: relative;
         }
         .bar1{
-            width: 0px;height: 20px;background: #f00;
-            animation-name:bar1;
-            animation-duration: 1s;
+            width: 0px;height: 20px;background: #00f;
+            /* animation-name:bar1; */
+            animation-duration:200ms;
             animation-timing-function: linear;
             animation-fill-mode: forwards;
         }
@@ -29,17 +29,18 @@
         .bar2{
             width: 20px;height:0;background: #00f;
             position: absolute;right: 0;top: 0;
-            animation-name:bar2;
-            animation-duration:1s;
+            /* animation-name:bar2; */
+            animation-duration:200ms;
             animation-fill-mode:forwards;
             animation-timing-function: linear;
-            animation-delay: 1s;
+            animation-delay: 200ms;
         }
         @keyframes bar2{
             to{height: 100%;}
         }
 
-
+        .boxWrap:hover .bar1{animation-name:bar1;}
+        .boxWrap:hover .bar2{animation-name:bar2;}
 
     </style>
 </head>
