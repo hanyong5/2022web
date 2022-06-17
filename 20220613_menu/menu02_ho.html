@@ -52,6 +52,17 @@
             font-size: 18px;display: flex;
             justify-content: center;align-items: center;
         }
+        .slide_item h5{
+            position: absolute;left:50%;
+            
+            animation-duration:1s;
+
+        }
+        @keyframes test1{
+            from{transform:translateY(100px);opacity: 0;}
+            to{transform:translateY(0);opacity: 1;}
+        }
+        .slide_item.swiper-slide-active h5{animation-name:test1;}
     </style>
 </head>
 <body>
@@ -116,10 +127,12 @@
     <div class="visual">
         <div class="swiper mySwiper">
             <div class="swiper-wrapper">
+                <div class="swiper-slide slide_item">
+                    <h5>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, ratione?</h5>
+                    <img src="../images/pc02.jpg" alt="">
+                  </div>
               <div class="swiper-slide">
-                <img src="../images/pc01.jpg" alt="">
-              </div>
-              <div class="swiper-slide">
+               
                 <img src="../images/pc02.jpg" alt="">
               </div>
               <div class="swiper-slide">
@@ -141,7 +154,7 @@
         spaceBetween: 30,
         centeredSlides: true,
         autoplay: {
-          delay: 2500,
+          delay: 3000,
           disableOnInteraction: false,
         },
         pagination: {
