@@ -11,14 +11,18 @@
         .sliderWrap{width: 1000px;margin: 0 auto;height: 500px;}
         .swiper{width: 100%;height: 100%;}
         .swiper-slide{
-            display: flex;justify-content: center;background: skyblue;
-            align-items: center;
+            display: flex;justify-content: center;
+            align-items: center;background-color:pink;
+            transform:scale(0.8) !important;transition:0.3s
+
         }
         /* .swiper-slide-active{background: pink;} */
         .swiper1st h3{transform:translateY(60px);transition:0.3s;transition-delay:0.3s ;opacity:0}
         .swiper1st.swiper-slide-active h3{transform: translateY(0);opacity:1}
         .swiper1st .img01{position: absolute;right:200px;top: 100px;width: 200px;transform: translateY(-40px);transition:0.3s;transition-delay: 0.5s;opacity:0}
         .swiper1st.swiper-slide-active .img01{transform: translateY(0);opacity:1}
+        .swiper-slide-active{transform:scale(0.9) !important;background: skyblue;z-index:10}
+        .swiper-slide-prev{transform: scale(1) !important;}
     </style>
 </head>
 <body>
@@ -40,8 +44,8 @@
     </div>
     <script>
         var swiper = new Swiper(".mySwiper", {
-            // slidesPerView: 3,
-            // centeredSlides: true,
+            slidesPerView: 3,
+            centeredSlides: true,
             loop: true,
             pagination: {
                 el: ".swiper-pagination",
