@@ -15,6 +15,7 @@
             background-position: center;
             background-size: cover;
             display: flex;justify-content: center;align-items: center;
+            overflow: hidden;
         }
         form{position: relative;}
         .wrap{position: absolute;width: 400px;}
@@ -22,7 +23,21 @@
             position: absolute;
             right: -100px;
             top: -200px;
+            /* animation-name: bal;
+            animation-duration: 2s;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
+            animation-timing-function:ease; */
+            animation: bal 2s infinite alternate
         }
+        @keyframes bal{
+            from{transform: translateY(20px);}
+            to{transform: translateY(0px);}
+        }
+
+
+
+
 
         p.title,.icon{position: absolute;top: 50%;transform:translateY(-50%)}
         p.title{
@@ -46,10 +61,18 @@
                         ;
         }
         .inp:focus{outline:none}
+        .air{
+            transform: translate(-300%,300%);
+            animation:air 5s forwards infinite linear
+        }
+        @keyframes air{
+            /* from{} */
+            to{transform: translate(300%,-300%) rotate(30deg);}
+        }
     </style>
 </head>
 <body>
-    
+    <img src="images/reallyAir.png" alt="" class="air">
     <div class="wrap">
         <img src="images/content2.png" alt="" class="img">
         
@@ -63,6 +86,6 @@
         </div>
     </div>
 
-    
+
 </body>
 </html>
