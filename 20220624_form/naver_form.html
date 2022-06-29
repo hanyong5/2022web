@@ -13,6 +13,10 @@
     <!-- css  -->
     <link rel="stylesheet" href="../css/reset.css">
     <link rel="stylesheet" href="css/style.css">
+    <script>
+        
+
+    </script>
 </head>
 <body>
     <div class="wrap">
@@ -60,12 +64,8 @@
                             <label for="user-birth">생일</label>
                             <input type="text" id="user-birth" name="userBirth" placeholder="년도(4자)" class="inp-field w130">
                             <span class="wall">|</span>
-                            <select name="month">
-                                <script>
-                                    for(var i=1;i<13;i++){
-                                        document.write(`<option value="${i}월">${i}월</option>`)
-                                    }
-                                </script>
+                            <select name="month" class="birMonth">
+                                
                             </select>
                             <span class="wall">|</span>
                             <input type="text" name="day" placeholder="일" class="inp-field w145">
@@ -76,9 +76,37 @@
                         </p>
 
                     </fieldset>
+                    <fieldset>
+                        <legend class="blind">휴대전화인증</legend>
+                        <p class="field confirm clearfix">
+                            <label for="tel1" class="blind">인증번호받기</label>
+                            <select name="tel1" id="tel1" class="telFirst">
+                                <option value="+031">+031</option>
+                                <option value="+032">+032</option>
+                            </select>
+                            <span class="wall">|</span>
+                            <input type="text" name="cellNum" placeholder="휴대전화번호" class="inp-field w303">
+                            <button type="text" class="btn-click">인증</button>
+                        </p>
+                    </fieldset>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+
+        let month = '';
+        for(var i=1;i<13;i++){
+           month = month + `<option value="${i}월">${i}월</option>`;
+        }
+
+        document.getElementsByClassName("birMonth")[0].innerHTML = month;
+        // document.querySelector(".birMonth").innerHTML = month;
+            
+       
+
+        
+    </script>
 </body>
 </html>

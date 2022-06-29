@@ -19,21 +19,24 @@
 
         // 1. 3단for문 작성하여 document출력
         // 2. 3단for문 작성, 변수에 누적저장하여 console.log출력
-        // 3. 3단for문 작성, 변수에 누적저장하여 각 테그, 아이디, 클레스에 출력
+        // 3. 3단for문 작성, 변수에 누적저장하여 각 태그, 아이디, 클레스에 출력
 
 
-        
+
         let gugudan = '';
-        for(var i=2;i<10;i++){
+        for(let i=2;i<10;i++){
             // document.write("3 x " + i + " = " + 3*i +"<br>");
             // document.write(`3 x ${i} = ${ 3*i }<br>`)
            gugudan +=  `3 x ${i} = ${ 3*i }<br>`;
             
         }
         console.log(gugudan);
+        
         // document.getElementById("box").innerHTML = gugudan;
-        // document.getElementsByClassName("box")[1].innerHTML = gugudan;
-        document.getElementsByTagName("div")[1].innerHTML = gugudan;
+        let box = document.getElementsByClassName("box");
+        box[1].innerHTML = gugudan;
+
+        // document.getElementsByTagName("div")[1].innerHTML = gugudan;
     </script>
 
 
