@@ -26,7 +26,7 @@
         <div id="content">
             <h2 class="blind">네이버회원가입</h2>
             <div class="join">
-                <form action="#" method="get">
+                <form action="#" method="post">
                     <fieldset>
                         <legend class="blind">아이디/비밀번호</legend>
                         <p class="field">
@@ -85,10 +85,16 @@
                                 <option value="+032">+032</option>
                             </select>
                             <span class="wall">|</span>
-                            <input type="text" name="cellNum" placeholder="휴대전화번호" class="inp-field w303">
-                            <button type="text" class="btn-click">인증</button>
+                            <input type="text" name="cellNum" placeholder="휴대전화번호" class="inp-field w202">
+                            <button type="text" class="btn-click btn-primary">인&nbsp;&nbsp;&nbsp;증</button>
+                        </p>
+                        <p class="field">
+                            <label for="tel-confirm" class="blind">인증번호확인</label>
+                            <input type="text" id="tel-confirm" name="telConfirm" placeholder="인증번호" class="inp-field w303">
+                            <button type="text" class="btn-click btn-success">확&nbsp;&nbsp;&nbsp;인</button>
                         </p>
                     </fieldset>
+                    <input type="submit" value="가입하기" class="btn-submit">
                 </form>
             </div>
         </div>
