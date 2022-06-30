@@ -12,10 +12,16 @@
     <script src="../js/jquery.bxslider.js"></script>
     <script>
         $(document).ready(function(){
+            var now;
             var slide = $(".slide").bxSlider({
                 controls:false,
                 pagerCustom:".slideTap",
-                mode:"vertical"
+                mode:"vertical",
+                onSlideAfter: function($slideElement, oldIndex, newIndex){ 
+
+                    console.log(newIndex)
+
+                }
             });
             
             $(".btnNext").click(function(){
@@ -24,6 +30,10 @@
             $(".btnPrev").click(function(){
                 slide.goToPrevSlide()
             });
+
+
+            now = slide.getCurrentSlide();
+            console.log(now)
 
         });
 

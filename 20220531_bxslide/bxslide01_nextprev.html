@@ -63,7 +63,11 @@
     <script>
         $(document).ready(function(){
             var slide = $(".slide1").bxSlider({
-                controls:false
+                controls:false,
+                onSlideAfter: function($slideElement, oldIndex, newIndex){ 
+                    var now = slide.getCurrentSlide();
+                    console.log(now)
+                }
             });
 
             $(".next").click(function(){
@@ -73,6 +77,10 @@
             $(".prev").click(function(){
                 slide.goToPrevSlide();
             });
+
+
+            
+            
 
 
 
