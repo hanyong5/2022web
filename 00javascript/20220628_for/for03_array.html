@@ -31,24 +31,27 @@
     <script>
         let han1 = 10;
         let han = [80,90,80,100,80];
+        
+                document.querySelector(".kor").innerHTML = han[0];
+                document.querySelector(".math").innerHTML = han[1];
+                document.querySelector(".eng").innerHTML = han[2];
+        
+        
+        
         let img = [
-            "img1.jpg",
-            "img2.jpg",
-            "img3.jpg",
-            "img4.jpg",
-            "img5.jpg",
-            "img6.jpg"
+            "img1",
+            "img2",
+            "img3",
+            "img4",
+            "img5",
+            "img6"
         ]
-
-        document.querySelector(".kor").innerHTML = han[0];
-        document.querySelector(".math").innerHTML = han[1];
-        document.querySelector(".eng").innerHTML = han[2];
 
         let score = "";
         for(let i=0;i<img.length;i++){
             // score += "<li>"+ han[i] + "</li>";
             // score += "<li><img src='../../images/" + img[i] + "'></li>";
-            score += `<li><img src="../../images/${img[i]}"></li>`
+            score += `<li><img src="../../images/${img[i]}.jpg"></li>`
         }
 
         console.log(score)
