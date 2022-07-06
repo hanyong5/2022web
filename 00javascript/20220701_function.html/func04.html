@@ -14,7 +14,16 @@
         원나이 : <span class="age">00</span>살
     </div>
 
-    <button onclick="insertName('야나두',20,2)">야나두</button>
+    <button onclick="insertName()" class="btn">야나두</button>
+
+    <script>
+        document.querySelector(".btn").addEventListener("click",function(){
+            insertName(f,g,h)
+        })
+        function insertName(name,num1,num2){
+
+        }
+    </script>
     <button onclick="insertName('야나두1',21,2)">야나두</button>
     <button onclick="insertName('야나두2',22,2)">야나두</button>
     <button onclick="insertName('야나두3',23,2)">야나두</button>
@@ -27,11 +36,19 @@
         const text1 = "test1";
         const text2 = "test2";
         
-        print(text1)
+        print()
+
+
         function print(name){ // name = text1;
             document.write(name)
+            //return name
         }
-        print(text2)
+
+
+
+
+        const vName = print('한성용')
+        document.write(vName)
 
         // 0. function insertName(매개변수,매개변수){} 함수제작
         // 1. 어디에다 insert, dom(document object model)조작 => 선택자
@@ -52,12 +69,17 @@
 
 
         //fncName(); 
+
+        
+
         const fncName = function(num1,num2){
             let add = num1 + num2;
 
-            return add;
+           return txt;
         }
-        //const view = fncName('한성용1')
+        //const view = fncName(10,20)
+
+  
 
 
         function fncCount(num1,num2){
@@ -67,9 +89,18 @@
 
         let view = fncCount(80,60)
 
+        
+
         document.querySelector(".myName").innerHTML = view;
 
         
     </script>
+
+
+
+    
+
+
+
 </body>
 </html>
