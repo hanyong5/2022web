@@ -46,23 +46,50 @@
         <div class="bar2"></div>
         <div class="bar3"></div>
     </div>
+    <div class="toggle">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
 
-    <div id="box"></div>
+    <div id="box" class=""></div>
 
 
     <script>
-        let on = true;
-        $(".toggle").click(function(){
-            if ( on == true ){
-                $(".toggle").addClass("active");
-                $("#box").addClass("view");
-                on = false;
-            }else{
-                $(".toggle").removeClass("active");
-                $("#box").removeClass("view");
-                on = true;
-            }
+        const toggleElem = document.querySelector(".toggle");
+        const boxElem = document.querySelector("#box");
+
+        // toggleElem.addEventListener("이벤트이름",실행함수)
+        // $(선택자).on("이벤트이름",실행함수)
+
+        toggleElem.addEventListener("click",function(){
+            toggleElem.classList.toggle("active");
+            boxElem.classList.toggle("view");
         })
+
+
+        // toggleElem.addEventListener("click",function(){
+        //     active();
+        // })
+        ///toggleElem.addEventListener("click",active)
+
+        // function active(){
+        //     toggleElem.classList.toggle("active");
+        //     boxElem.classList.toggle("view");
+        // }
+
+        // let on = true;
+        // $(".toggle").click(function(){
+        //     if ( on == true ){
+        //         $(".toggle").addClass("active");
+        //         $("#box").addClass("view");
+        //         on = false;
+        //     }else{
+        //         $(".toggle").removeClass("active");
+        //         $("#box").removeClass("view");
+        //         on = true;
+        //     }
+        // })
     </script>
 </body>
 </html>
