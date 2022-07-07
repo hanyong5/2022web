@@ -99,6 +99,7 @@ fieldset{
     border: 1px solid #ccc;width: 99px;height: 31px;
     background-color: #fff;cursor: pointer;position: absolute;
     right: 15px;top: 10px;border-radius: 3px;
+   
 }
 .btn-click.btn-primary{background-color: rgb(25, 154, 214);color:#fff}
 .btn-click.btn-success{background-color: rgb(12, 128, 79);color:#fff}
