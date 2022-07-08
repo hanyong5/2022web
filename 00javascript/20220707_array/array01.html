@@ -47,16 +47,18 @@
 
 
         // jquery 
+        let count = 1;
 
         $(".btn").click(function(){
             console.log( $(".inp").val() )
             arr.push($(".inp").val())
             console.log(arr)
-
-            let text = `<li>${$(".inp").val()}</li>`;
-
+            let value = $(".inp").val()
+            
+            let text = `<li>${value}</li>`;
             $(".view").append(text)
-            $(".inp").val("")
+            $(".inp").val("");
+
 
         })
         $(".allDel").click(function(){
@@ -64,6 +66,12 @@
         })
 
 
+        console.log('');
+        
+        
     </script>
-</body>
+    <style>
+        @charset 'utf-8';
+    </style>
+ </body>
 </html>
