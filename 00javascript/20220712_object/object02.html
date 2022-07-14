@@ -21,11 +21,13 @@
 
     </div>
   <script>
+
     const obj = {
         eng:100,
         math:80,
         kor:90,
-        levelup(){
+        levelup:function(){
+            console.log(this);
             return this.eng + 10
         }
     }
