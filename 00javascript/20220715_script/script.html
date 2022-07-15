@@ -32,5 +32,25 @@
 
        
     </script>
+
+    
+    <!-- <br><a href="javascript:void(0)">클릭하세요</a> -->
+    <br><a href="#" onclick="return false">클릭하세요</a>
+    <br><a href="#" onclick="mClick(event)">클릭하세요</a>
+    <span class="text">test</span>
+    <script>
+        function mClick(e){
+            e.preventDefault();
+        }
+
+        //for 글자의 크기(10~35px)를 5증가
+
+        let text="";
+        for(let i=10;i<=35;i+=5){
+            text += `<span style="font-size:${i}px">test</span>`
+        }
+        document.querySelector(".text").innerHTML = text;
+    </script>
+    
 </body>
 </html>
