@@ -32,10 +32,16 @@
         
         .header{
             position: absolute;
-            width: 100%;background-color: #fff;
+            width: 100%;background-color:rgba(255,255,255,1);
             display: flex;
             padding: 16px 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,.5)
+            box-shadow: 0 0 20px rgba(0,0,0,.5);
+            transition: 0.3s;
+        }
+        .header.fixed{
+            position: fixed;
+            padding: 5px 20px;
+            background-color:rgba(255,255,255,.5);
         }
         .header .menu{
             width: 400px;background: pink;
@@ -78,13 +84,46 @@
     </div>
 
     <script>
+        
+        
+        // #1 javascript
         //document.querySelector(".scroll").innerHTML = window.pageYOffset;
 
-        const scroll = document.querySelector(".scroll");
+        // const scroll = document.querySelector(".scroll");
+        // const header = document.querySelector(".header")
 
-        window.addEventListener("scroll",function(){
-            let  scrollY = window.pageYOffset;
-            scroll.innerHTML = Math.floor(scrollY)
+        // window.addEventListener("scroll",function(){
+        //     let  scrollY = window.pageYOffset;
+
+        //     // #1 setattribute
+        //     // if( scrollY > 300 ){
+        //     //     header.setAttribute("style","position:fixed")
+        //     // }else{
+        //     //     header.setAttribute("style","")
+        //     // }
+            
+        //     // #2 addclass
+        //     if( scrollY > 300 ){
+        //         header.classList.add("fixed");
+        //     }else{
+        //         header.classList.remove("fixed");
+        //     }
+
+        //     scroll.innerHTML = Math.floor(scrollY)
+        // })
+
+        $(window).scroll(function(){
+            let scrollY = window.pageYOffset;
+
+            if( scrollY > 300 ){
+                //$(".header").attr("style","position:fixed")
+                $(".header").addClass("fixed");
+            }else{
+                //$(".header").attr("style","");
+                $(".header").removeClass("fixed");
+            }
+
+            $(".scroll").html(parseInt(scrollY))
         })
     </script>
 
