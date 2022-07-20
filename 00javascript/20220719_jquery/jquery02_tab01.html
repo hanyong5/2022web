@@ -85,13 +85,15 @@
     </div>
 
     <script>
-        
+        console.log(this)
         $(".menu>li").click(function(){
+            let i = $(this).index();
+
             $(".menu>li").removeClass("active");
             $(this).addClass("active")
 
-            let i = $(this).index();
-            $(".content div").hide().eq(i).show()
+            $(".content div").hide()
+            $(".content div").eq(i).show()
 
             console.log($(this))
 
