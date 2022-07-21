@@ -48,5 +48,22 @@
         <img src="../../images/img1.jpg" alt="">
     </div>
    </div>
+   <script>
+    $(".modal").click(function(e){
+        e.preventDefault();
+        let aModal = $(this).attr("href"); // attr get
+        console.log(aModal)
+        $(".glayLayer").css("display","flex");
+        $(".overLayer img").attr("src",aModal) // attr set
+    })
+    $(".xicon").click(function(){
+        // $(".glayLayer").css("display","none")
+        $(this).parent().parent().hide();
+    })
+    // $(".glayLayer").click(function(){
+    //     $(this).hide()
+    // })
+    
+   </script>
 </body>
 </html>
