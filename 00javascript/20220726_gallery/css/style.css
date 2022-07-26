@@ -1,0 +1,4 @@
+@charset "utf-8";
+#gallery{width: 824px;margin: 0 auto}
+#image{width: 760px;margin: 0 auto}
+#image > p{display: none;}
