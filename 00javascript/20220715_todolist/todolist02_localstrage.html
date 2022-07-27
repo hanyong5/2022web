@@ -16,6 +16,7 @@
     <ul class="listView">
 
     </ul>
+    <button class="btn2">전체삭제</button>
 
     <script>
         let listData= [];
@@ -23,6 +24,7 @@
         // init
         const inp = document.querySelector(".inp");
         const btn1 = document.querySelector(".btn1");
+        const btn2 = document.querySelector(".btn2");
         const listView = document.querySelector(".listView");
         
         btn1.addEventListener("click",function(){
@@ -50,14 +52,27 @@
             
             let viewList = "";
             listData.forEach(function(item,index){
-                console.log(item,listData[index]);
-                viewList +=  `<li>${item}</li>`;
+                //console.log(item,listData[index]);
+                viewList +=  `<li>${item} <span onclick="mydel('${item}',${index})">[del]</span></li>`;
             })
 
-            listView.innerHTML = viewList
+            listView.innerHTML = viewList;
         }
 
         viewData();
+
+
+        function mydel(item,index){
+            listData.splice(index,1)
+            localStorage.removeItem(item);
+            viewData();
+        }
+
+        btn2.addEventListener("click",function(){
+            listData = [];
+            localStorage.clear()
+            viewData();
+        })
     </script>
 
 </body>
