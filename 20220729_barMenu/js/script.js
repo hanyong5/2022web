@@ -9,7 +9,7 @@
 
 // menu 0 1 2 3 4
 function nowMenu(menu){
-    console.log(menu)
+    //console.log(menu)
 
     if(menu == "main"){
         $(".navbar ul").find("li").mouseover(over);
@@ -36,3 +36,11 @@ function over(){
 function out(){
     $(".bar").css({opacity:0})
 }
+
+
+// let para = location.search;
+// let params = new URLSearchParams(para)
+// console.log(new URLSearchParams(para))
+
+let params = new URLSearchParams(location.search)
+console.log(params.get("han"))
