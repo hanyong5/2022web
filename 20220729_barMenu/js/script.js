@@ -38,9 +38,4 @@ function out(){
 }
 
 
-// let para = location.search;
-// let params = new URLSearchParams(para)
-// console.log(new URLSearchParams(para))
 
-let params = new URLSearchParams(location.search)
-console.log(params.get("han"))
