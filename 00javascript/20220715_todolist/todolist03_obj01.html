@@ -39,7 +39,7 @@
             {todo:"오늘의 할일1",done:true},
             {todo:"오늘의 할일2",done:false},
             {todo:"오늘의 할일3",done:false},
-            {todo:"오늘의 할일4",done:false},
+            {todo:"오늘의 할일4",done:true},
             {todo:"오늘의 할일5",done:false},
         ]
 
@@ -58,22 +58,36 @@
             viewList += `<li>`;
 
             if( listData[i].done == true){
-                viewList += `<div class="item active">${listData[i].todo}</div>`
+                viewList += `<div class="item active"  onclick="done(${i})">${listData[i].todo}</div>`
             }else{
-                viewList += `<div class="item">${listData[i].todo}</div>`
+                viewList += `<div class="item"  onclick="done(${i})">${listData[i].todo}</div>`
             }
                                
             viewList +=  `<div class="iconWrap">
                                 <i class="fa-solid fa-trash" onclick=""></i>
-                                <i class="fa-solid fa-disease" onclick=""></i>
-                                <i class="fa-solid fa-circle-check" onclick=""></i>
-                                <i class="fa-solid fa-power-off" onclick=""></i>
-                            </div>
+                                <i class="fa-solid fa-disease" onclick=""></i>`;
+
+            if( listData[i].done == true){
+                viewList += `<i class="fa-solid fa-circle-check" onclick="done(${i})"></i>`; 
+            }else{
+                viewList += `<i class="fa-solid fa-power-off" onclick="done(${i})"></i>`; 
+            }
+
+
+            viewList +=   `</div>
                         </li>`
         })
         listView.innerHTML = viewList;
     }
     view();
+
+    function done(idx){
+        console.log(idx);
+        listData[idx].done = !listData[idx].done;
+        view();
+    }
+
+    
 </script>
 
 
