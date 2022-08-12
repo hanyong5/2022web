@@ -58,7 +58,7 @@ const lazyLoad = document.querySelectorAll(".lazy-load");
 window.addEventListener("scroll",function(){
     lazyLoad.forEach(function(item){
         // console.log(item);
-        const rect = item.getBoundingClientRect().top
+        const rect = item.getBoundingClientRect().top;
         console.log(rect);
         if(rect <= window.innerHeight){
             item.classList.add("fade")
