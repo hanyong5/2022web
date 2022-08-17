@@ -26,7 +26,24 @@ a:link,a:visited{text-decoration: none;color:var(--font-color1)}
 .banner{box-shadow:var(--shadow-color2);}
 .banner a{color:var(--font-color2)}
 
+.banner1 > .row > div{cursor: pointer;}
+.banner1 .card{
+    box-shadow:var(--shadow-color2);
+    border: 0 none;
+}
 
+.adven .img1st{top: 0;right: 0;box-shadow:var(--shadow-color2);}
+.adven .img2st{bottom: 0;box-shadow:var(--shadow-color2);}
+.adven .img4st{top: 0;right: 0;box-shadow:var(--shadow-color2);width: 300px;}
+.adven .img3st{bottom: 0;box-shadow:var(--shadow-color2);width: 500px;}
+
+
+
+.adven .imgView{height: 400px;}
+.adven .icon{
+    width: 80px;height: 80px;
+    border-radius:50%;box-shadow:var(--shadow-color2);
+}
 @media (max-width:768px){
     .navbar-nav .nav-item a{color:black !important}
     .banner img{width: 30%;}
