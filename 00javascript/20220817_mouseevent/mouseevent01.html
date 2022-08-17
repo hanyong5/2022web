@@ -10,7 +10,7 @@
     <style>
         .box,.box1{width: 10px;height: 10px;position: absolute;border-radius: 50%;}
         .box{background: red;}
-        .box1{background: blue;}
+        .box1{background: blue;transition:0.5s}
     </style>
 </head>
 <body>
@@ -18,7 +18,7 @@
 <br>
 <br>
 <!-- <img src="../../images/testimg.jpg" alt="" onmousemove="where(event)"> -->
-<img src="../../images/testimg.jpg" alt="" onmousemove="myImg(event)">
+<img src="../../images/testimg.jpg" alt="" onmousemove="myImg(event)" >
 <div class="box"></div>
 <div class="box1"></div>
 <script>
@@ -33,12 +33,14 @@
 
     function myImg(e){
         console.log(e.x,e.y)
-        box.style.left =40 + e.x + "px";
+        box.style.left = 40 + e.x + "px";
         box.style.top = 40 + e.y + "px";
 
         box1.style.left =60 + e.x + "px";
         box1.style.top = 60 + e.y + "px";
     }
+
+
 </script>
 </body>
 </html>
