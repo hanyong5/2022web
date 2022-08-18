@@ -1,0 +1,41 @@
+@charset "utf-8";
+/********** css responsive init  **********/
+
+.menu{
+    position: fixed;background: white;
+    width: 100%;display: flex;padding: 10px 16px;
+    gap:20px
+}
+.menuWrap{
+    display: flex;
+    gap:10px
+}
+.menuWrap a{
+    display: flex;padding: 0 10px;
+    align-items: center;border-radius: 10px;
+}
+.menuWrap a:hover{background: pink;}
+.menuWrap a.active{background: skyblue;}
+
+
+
+/********** css responsive  **********/
+@media (max-width: 1399px) {
+
+}
+
+@media (max-width: 1199px) {
+
+}
+
+@media (max-width: 991px) {
+
+}
+
+@media (max-width: 767px) {
+    .menuWrap{margin-left:auto;}
+}
+
+@media (max-width: 575px) {
+
+}
