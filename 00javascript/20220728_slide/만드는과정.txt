@@ -1,0 +1,6 @@
+1. 디자인
+2. next button 작성
+3. prev button 작성
+4. overBtn작성(중복클릭방지)
+5. pager작성
+6. mouse wheel event (deltaY 사용) 
