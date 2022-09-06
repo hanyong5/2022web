@@ -17,5 +17,10 @@ $("#fullpage").fullpage({
         }else{
             $(".page2 .txtWrap").removeClass("move")
         }
+        if(index == 3){
+            $(".page3 .wrap").addClass("move")
+        }else{
+            $(".page3 .wrap").removeClass("move")
+        }
     }
 })

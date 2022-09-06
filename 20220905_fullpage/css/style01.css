@@ -12,6 +12,12 @@ ul, li {
   list-style: none;
 }
 
+h2 {
+  font-size: 3em;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
 .navTop {
   position: fixed;
   z-index: 1;
@@ -46,6 +52,108 @@ ul, li {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.wrap div {
+  position: absolute;
+}
+.wrap div.txt1 {
+  transform: translateY(200px);
+  opacity: 0;
+}
+.wrap div.txt2 h2:nth-child(1) {
+  transform: translateX(-200px);
+  opacity: 0;
+}
+.wrap div.txt2 h2:nth-child(2) {
+  transform: translateX(200px);
+  opacity: 0;
+}
+.wrap div.txt3 {
+  opacity: 0;
+}
+@-webkit-keyframes txtAni1 {
+  50% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+@keyframes txtAni1 {
+  50% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+@-webkit-keyframes txtAni21 {
+  60% {
+    transform: translateX(20px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes txtAni21 {
+  60% {
+    transform: translateX(20px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@-webkit-keyframes txtAni22 {
+  60% {
+    transform: translateX(-20px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes txtAni22 {
+  60% {
+    transform: translateX(-20px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.wrap.move .txt1 {
+  -webkit-animation: txtAni1 1.5s alternate forwards;
+          animation: txtAni1 1.5s alternate forwards;
+}
+.wrap.move .txt2 h2:nth-child(1) {
+  -webkit-animation: txtAni21 1s alternate forwards;
+          animation: txtAni21 1s alternate forwards;
+  -webkit-animation-delay: 1s;
+          animation-delay: 1s;
+}
+.wrap.move .txt2 h2:nth-child(2) {
+  -webkit-animation: txtAni22 1s alternate forwards;
+          animation: txtAni22 1s alternate forwards;
+  -webkit-animation-delay: 1.5s;
+          animation-delay: 1.5s;
 }
 
 .page1 .txtWrap {
