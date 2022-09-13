@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        /* body{
+            background-image: url(img/sun.svg);
+            background-position: center;
+            background-size: 10%;
+        } */
+        *{
+            margin: 0;p0
+        }
+        .box1,.box2{
+            width: 300px;height: 300px;
+            background: skyblue;
+        }
+        .cir1{
+            fill:#f7931e;
+            stroke: #000;
+            stroke-dasharray: 393;
+            stroke-dashoffset: 393;
+            animation: cAni 1s alternate forwards;
+            animation-delay: 1s;
+            opacity: 0;
+            
+        }
+
+        @keyframes cAni {
+            100%{
+                opacity: 1;
+                stroke-dashoffset: 0;
+            }
+        }
+        .outer{
+            fill:#8cc63f;
+            stroke: #000;
+            stroke-dasharray: 925;
+            stroke-dashoffset: 925;
+            animation: oAni 2s alternate forwards;
+            opacity: 0;
+         }
+         @keyframes oAni {
+            100%{
+                opacity: 1;
+                stroke-dashoffset: 0;
+            }
+         }
+
+         .box2.active .st0{animation:sLine 1s alternate forwards}
+         .st0{ 
+            stroke-dasharray: 358;
+            stroke-dashoffset: 358;
+            
+         }
+         @keyframes sLine {
+            100%{
+                stroke-dashoffset: 0;
+            }
+         }
+
+         .box2.active .l_1{ animation-delay: 0s;}
+         .box2.active .l_2{ animation-delay: 0.3s;}
+         .box2.active .l_3{ animation-delay: 0.6s;}
+         .box2.active .l_4{ animation-delay: 0.9s;}
+         .box2.active .l_5{ animation-delay: 1.2s;}
+         .box2.active .l_6{ animation-delay: 1.5s;}
+         .box2.active .l_7{ animation-delay: 1.8s;}
+         .box2.active .l_8{ animation-delay: 2.1s;}
+         .box2.active .l_9{ animation-delay: 2.4s;}
+         .box2.active .l_10{ animation-delay: 2.7s;}
+         .box2.active .l_11{ animation-delay: 3s;}
+         .box2.active .l_12{ animation-delay: 3.3s;}
+
+    </style>
+</head>
+<body>
+    <!-- <img src="img/sun.svg" alt=""> -->
+    <div class="box1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" style="enable-background:new 0 0 300 300;" xml:space="preserve">
+            <path class="outer" d="M173.9 60.9C165.6 43.3 150 31 150 31s-15.6 12.3-23.9 29.9C110.1 49.8 90.5 47 90.5 47s-7.3 18.4-5.7 37.8C65.4 83.2 47 90.5 47 90.5s2.8 19.6 13.9 35.6C43.3 134.4 31 150 31 150s12.3 15.6 29.9 23.9c-11.1 16-13.9 35.6-13.9 35.6s18.4 7.3 37.8 5.7c-1.6 19.4 5.7 37.8 5.7 37.8s19.6-2.8 35.6-13.9C134.4 256.7 150 269 150 269s15.6-12.3 23.9-29.9c16 11.1 35.6 13.9 35.6 13.9s7.3-18.4 5.7-37.8c19.4 1.6 37.8-5.7 37.8-5.7s-2.8-19.6-13.9-35.6C256.7 165.6 269 150 269 150s-12.3-15.6-29.9-23.9c11.1-16 13.9-35.6 13.9-35.6s-18.4-7.3-37.8-5.7c1.6-19.4-5.7-37.8-5.7-37.8s-19.6 3.2-35.5 13.9" />
+            <circle class="cir1" cx="150" cy="150" r="62.6"/>
+        </svg>
+    </div>
+
+    <div class="box2">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 300 300" style="enable-background:new 0 0 300 300" xml:space="preserve">
+            <style>
+              .st0{fill:none;stroke:#000;stroke-miterlimit:10}
+            </style>
+            <path class="st0 l_1" d="M17.5 32.5s10 88 100 114 122 55 153 114"/>
+            <path class="st0 l_2" d="M24 30.9s15.4 83.7 99.1 112.8 106.3 60.2 139.7 117.5"/>
+            <path class="st0 l_3" d="M30.6 29.2s20.7 79.5 98.2 111.6 90.5 65.4 126.5 121.1"/>
+            <path class="st0 l_4" d="M37.1 27.6s26.1 75.2 97.3 110.5 74.8 70.5 113.2 124.6"/>
+            <path class="st0 l_5" d="M43.7 26s31.5 70.9 96.4 109.3 59 75.7 99.9 128.1"/>
+            <path class="st0 l_6" d="M50.2 24.3S87 90.9 145.7 132.4s43.4 80.9 86.6 131.7"/>
+            <path class="st0 l_7" d="M56.8 22.7S99 85.1 151.3 129.6s27.6 86.1 73.4 135.3"/>
+            <path class="st0 l_8" d="M63.3 21s47.5 58.1 93.6 105.7 12 91.3 60.1 138.9"/>
+            <path class="st0 l_9" d="M69.9 19.4s52.9 53.8 92.7 104.5-3.8 96.5 46.8 142.4"/>
+            <path class="st0 l_10" d="M76.4 17.8s58.3 49.5 91.8 103.4-19.5 101.6 33.6 145.8"/>
+            <path class="st0 l_11" d="M83 16.1s63.6 45.3 90.9 102.2-35.3 106.8 20.3 149.5"/>
+            <path class="st0 l_12" d="M89.5 14.5s69 41 90 101-51 112 7 153"/>
+          </svg>
+    </div>
+</body>
+</html>
