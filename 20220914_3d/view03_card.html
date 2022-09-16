@@ -26,6 +26,7 @@
             transform-style: preserve-3d;
             cursor: pointer;
             display: flex;
+            gap:10px
         }
         .cardWrap img{
             display: block;
@@ -36,7 +37,6 @@
             transform-style: preserve-3d;
             transform: rotateY(0deg);
             transition:0.3s;
-            
         }
         .card div{ 
             position: absolute;
@@ -67,7 +67,7 @@
                 <img src="images/back.jpg" alt="">
             </div>
         </div>
-        <div class="card">
+        <div class="card active">
             <div class="card-front">
                 <img src="images/j.png" alt="">
             </div>
@@ -75,12 +75,31 @@
                 <img src="images/back.jpg" alt="">
             </div>
         </div>
+        <div class="card active">
+            <div class="card-front">
+                <img src="images/q.png" alt="">
+            </div>
+            <div class="card-back">
+                <img src="images/back.jpg" alt="">
+            </div>
+        </div>
+        <div class="card active">
+            <div class="card-front">
+                <img src="images/a.jpg" alt="">
+            </div>
+            <div class="card-back">
+                <img src="images/back.jpg" alt="">
+            </div>
+        </div>
     </div>
     <script>
-        const card = document.querySelector(".card");
-        card.addEventListener("click",function(){
-            card.classList.toggle("active")
-        })
+        const card = document.querySelectorAll(".card");
+
+        for(let i=0;i<card.length;i++){
+            card[i].addEventListener("click",function(){
+                this.classList.toggle("active")
+            })
+        }
     </script>
 </body>
 </html>
