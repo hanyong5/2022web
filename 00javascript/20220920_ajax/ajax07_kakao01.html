@@ -31,6 +31,25 @@
             padding: 20px 25px;
             background: #eee;
         }
+        .search{ 
+            display: flex;
+            gap:10px;
+            margin-bottom: 40px;
+        }
+        .search .inp-search{ 
+            flex:1 0 auto;
+            padding: 10px;
+            font-size: 1.3em;
+            border-radius: 30px;
+            text-indent: 20px;
+        }
+        .search .btnIcon{ 
+            width: 45px;height: 45px;background: greenyellow;
+            color:#333;
+            display: flex;justify-content: center;align-items: center;
+            border-radius:50%;
+            align-self: center;
+        }
     </style>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
@@ -39,12 +58,17 @@
         integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
-   <script src="js/moment.min.js"></script>       
+   <script src="js/moment.min.js"></script>  
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/ko.min.js" integrity="sha512-3kMAxw/DoCOkS6yQGfQsRY1FWknTEzdiz8DOwWoqf+eGRN45AmjS2Lggql50nCe9Q6m5su5dDZylflBY2YjABQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>     
 </head>
 
 <body>
 
     <div class="wrap">
+        <div class="search">
+            <input type="text" class="inp-search" placeholder="검색어를 입력하세요">
+            <div class="btnIcon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        </div>
         <ul class="list">
             <!-- <li>
                 <h3><a href="#">이효리가 똑똑하지 20대부터 자기가 관리</a></h3>
@@ -57,17 +81,40 @@
             </li> -->
             
         </ul>
+        <div class="pageing">
+            <a href="#" onclick="sView('이효리',1)">1</a>
+            <a href="#" onclick="sView('이효리',2)">2</a>
+            <a href="#" onclick="sView('이효리',3)">3</a>
+            <a href="#" onclick="sView('이효리',4)">4</a>
+            <a href="#" onclick="sView('이효리',5)">5</a>
+        </div>
     </div>
     <script>
-        axios
-            .get(
-                "https://dapi.kakao.com/v2/search/web?query=이효리&sort=recency&size=10",
-                {
-                    headers: { Authorization: "KakaoAK 2cd14d51ce29ccd0eb25d4629eb208db" }
-                }
-            )
+        let page=1;
+        let kakaoUrl = 'https://dapi.kakao.com/v2/search/web'
+
+
+
+        sView("이효리")
+
+        function sView(query){
+            axios
+            .get(getPath(),getParmas(query))
             .then(onResult)
             .catch(onError);
+        }
+
+        function getPath(){
+            return kakaoUrl;
+        }
+
+        function getParmas(query){
+            return {
+                params:{ query:query, size:10, page:page },
+                headers: { Authorization: "KakaoAK 2cd14d51ce29ccd0eb25d4629eb208db" }
+            }
+        }
+        
 
         function onResult(v) {
             //console.log(v.data.documents);
@@ -88,9 +135,10 @@
                                     ${item.contents}
                                 </p>
                                 <p class="date">
-                                    ${moment(item.datetime).format('YYYY MM DD dddd')}
+                                    ${moment(item.datetime).format('YYYY/MM/DD dddd')}
                                 </p>
                             </li>
+                            
                             `
             })
 
@@ -99,6 +147,12 @@
         function onError(error) {
             console.log('error');
         }
+
+        $(".btnIcon").click(function(){
+            console.log($(".inp-search").val())
+            let value = $(".inp-search").val()
+            sView(value)
+        })
     </script>
     
 </body>

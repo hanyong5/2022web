@@ -16,8 +16,9 @@
 <script>
     axios
         .get(
-            "https://dapi.kakao.com/v2/search/web?query=이효리&sort=recency&size=10",
+            "https://dapi.kakao.com/v2/search/web",
             {
+                params:{query:"이효리",size:10,page:1},
                 headers:{Authorization: "KakaoAK 2cd14d51ce29ccd0eb25d4629eb208db"}
             }
             )
