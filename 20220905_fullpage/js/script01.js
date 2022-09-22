@@ -24,3 +24,20 @@ $("#fullpage").fullpage({
         }
     }
 })
+
+$(".vView div").click(function(){
+    console.log($(this).index());
+    let i = $(this).index();
+    $(".vView div").removeClass("active")
+    $(".vView div").eq(i).addClass("active")
+    if(i == 0){
+        $("#myVideo source").attr("src","movie/sample01.mp4");
+        $("#myVideo").get(0).load();
+        $("#myVideo").get(0).play();
+    }
+    if(i == 1){
+        $("#myVideo source").attr("src","movie/sample02.mp4");
+        $("#myVideo").get(0).load();
+        $("#myVideo").get(0).play();
+    }
+})

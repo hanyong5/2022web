@@ -91,6 +91,7 @@
     </div>
     <script>
         let page=1;
+        let query;
         let kakaoUrl = 'https://dapi.kakao.com/v2/search/web'
 
 
@@ -110,7 +111,7 @@
 
         function getParmas(query){
             return {
-                params:{ query:query, size:10, page:page },
+                params:{ query:query, size:10, page:page, sort:"recency"},
                 headers: { Authorization: "KakaoAK 2cd14d51ce29ccd0eb25d4629eb208db" }
             }
         }
@@ -150,9 +151,11 @@
 
         $(".btnIcon").click(function(){
             console.log($(".inp-search").val())
-            let value = $(".inp-search").val()
-            sView(value)
+            query = $(".inp-search").val()
+            sView(query)
         })
+
+
     </script>
     
 </body>
