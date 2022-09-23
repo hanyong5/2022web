@@ -50,15 +50,25 @@
             border-radius:50%;
             align-self: center;
         }
+        .paging .pageWrap{ 
+            display: flex;
+        }
         .paging a{ 
-            
+            display: flex;
+            width: 40px;height: 40px;
             margin-right: 10px;
+            border-radius: 20px;
+            justify-content: center;align-items: center;
+        }
+        .paging a.active{ 
+            background: skyblue;
         }
         .paging { 
             display: flex;
-            font-size: 2em;
+            font-size: 1.2em;
             cursor:pointer
         }
+
     </style>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
@@ -179,10 +189,14 @@
 
         function setPager(totalRecord){
             page = Number(page);
+            
 
             console.log(totalRecord)
             let totalPage = Math.ceil(totalRecord / size);
-            let pagerCnt = 10; //페이지개수 1 2 3 4 5
+
+            if(page > totalPage){page=totalPage};
+
+            let pagerCnt = 5; //페이지개수 1 2 3 4 5
             let startPage;
             let endPage;
 
@@ -191,7 +205,11 @@
 
             let pageNum = "";
             for(let i=startPage;i<=endPage;i++){
-                pageNum += `<a href="#" onclick="onPageClick(${i})">${i}</a>`
+                if(page === i){
+                    pageNum += `<a href="#" onclick="onPageClick(${i})" class="active">${i}</a>`
+                }else{
+                    pageNum += `<a href="#" onclick="onPageClick(${i})">${i}</a>` 
+                }
             }
 
             if(totalPage === 0){
@@ -204,6 +222,16 @@
         }
         $(".next").click(function(){
            page = page + 1;
+           if( page > 50){ page=50 }
+           console.log(page)
+           axios
+            .get(getPath(),getParmas(query,page))
+            .then(onResult)
+            .catch(onError);
+        })
+        $(".prev").click(function(){
+           page = page - 1;
+           if(page === 0){ page = 1}
            console.log(page)
            axios
             .get(getPath(),getParmas(query,page))
