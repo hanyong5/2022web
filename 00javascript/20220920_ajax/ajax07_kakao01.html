@@ -82,21 +82,23 @@
             
         </ul>
         <div class="pageing">
-            <a href="#" onclick="sView('이효리',1)">1</a>
-            <a href="#" onclick="sView('이효리',2)">2</a>
-            <a href="#" onclick="sView('이효리',3)">3</a>
-            <a href="#" onclick="sView('이효리',4)">4</a>
-            <a href="#" onclick="sView('이효리',5)">5</a>
+            <a href="#" onclick="onPageClick(1)">1</a>
+            <a href="#" onclick="onPageClick(2)">2</a>
+            <a href="#" onclick="onPageClick(3)">3</a>
+            <a href="#" onclick="onPageClick(4)">4</a>
+            <a href="#" onclick="onPageClick(5)">5</a>
+
         </div>
     </div>
     <script>
-        let page=1;
+        let page=1; //50page
+        let size=5;  //출력개수
         let query;
         let kakaoUrl = 'https://dapi.kakao.com/v2/search/web'
 
 
 
-        sView("이효리")
+        //sView("코로나")
 
         function sView(query){
             axios
@@ -109,9 +111,9 @@
             return kakaoUrl;
         }
 
-        function getParmas(query){
+        function getParmas(query,page){
             return {
-                params:{ query:query, size:10, page:page, sort:"recency"},
+                params: { query:query, size:size, page:page, sort:"recency"},
                 headers: { Authorization: "KakaoAK 2cd14d51ce29ccd0eb25d4629eb208db" }
             }
         }
@@ -154,6 +156,15 @@
             query = $(".inp-search").val()
             sView(query)
         })
+
+        function onPageClick(page){
+            axios
+            .get(getPath(),getParmas(query,page))
+            .then(onResult)
+            .catch(onError);
+        }
+
+
 
 
     </script>
