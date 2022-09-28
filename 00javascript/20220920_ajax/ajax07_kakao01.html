@@ -112,7 +112,7 @@
     </div>
     <script>
         let page=1; //50page 
-        let size=5;  //출력개수 50list
+        let size=10;  //출력개수 50list
         let query;
         let kakaoUrl = 'https://dapi.kakao.com/v2/search/web'
 
@@ -143,7 +143,7 @@
             console.log(v.data.meta.pageable_count);
 
             setPager(v.data.meta.pageable_count);//paging function
-
+            console.log("view"+page)
             let sData = v.data.documents;
 
             // for(let i=0;i<sData.length;i++){
@@ -180,11 +180,24 @@
             sView(query)
         })
 
+
+        $(".search").keyup(function(e){
+            if(e.key == "Enter"){
+            query = $(".inp-search").val()
+            sView(query)
+            }
+        })
+
+
+
+
         function onPageClick(page){
             axios
             .get(getPath(),getParmas(query,page))
             .then(onResult)
             .catch(onError);
+
+           
         }
 
         function setPager(totalRecord){
@@ -202,6 +215,8 @@
 
             startPage = Math.floor((page - 1) / pagerCnt) * pagerCnt + 1;
             endPage = startPage + pagerCnt - 1;
+
+            if(endPage > totalPage) {endPage = totalPage;}
 
             let pageNum = "";
             for(let i=startPage;i<=endPage;i++){
