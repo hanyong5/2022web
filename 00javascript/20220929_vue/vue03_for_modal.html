@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{ 
+            margin: 0;padding: 0;box-sizing: border-box;
+        }
+        a:visited,a:link{ 
+            text-decoration: none;
+            color:#333
+        }
+        .container {
+            width: 1000px;
+            margin: 0 auto;
+        }
+        .navbar {
+            display: flex;
+        }
+        .nav { 
+            margin-left: auto;
+        }
+        .nav ul { 
+            display: flex;
+            gap:10px;
+            height: 40px;
+        }
+        .nav ul li{ 
+            padding:0 10px;
+            height: 100%;
+        }
+        .nav ul li a{ 
+            display: flex;justify-content: center;align-items: center;
+            height: 100%;
+        }
+        ul,li{ 
+            list-style: none;
+        }
+       
+
+        /* banner  */
+        .banner ul{ 
+            display: flex;
+            gap:20px
+        }
+        .banner li {
+            width: calc( 100% / 6 );
+        }
+        .banner li img { 
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <header class="header">
+            <div class="container">
+                <div class="navbar">
+                    <h1><a href="#">{{logo}}</a></h1>
+                    <div class="nav">
+                        <ul>
+                            <li v-for="(item,i) in menuList">
+                                <a :href="item.url">{{menuList[i].menu}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="container banner">
+            <ul>
+                <li v-for="(item,i) in noticeData">
+                    
+                        <img v-bind:src="`img/${item.img}`" alt="">
+                        <h4>{{noticeData[i].title}}</h4>
+                    
+                </li>
+            </ul>
+        </div>
+        <div class="visual"></div>
+        <footer class="footer"></footer>
+    </div>               
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script type="module">
+        import { noticeData,newsData,snsData } from "./data.js";
+        const myWeb = {
+            data(){
+                return {
+                    logo:"naver",
+                    menuList:[
+                        {menu:"회사소개",url:"http://www.naver.com"},
+                        {menu:"제품소개",url:"http://www.naver.com"},
+                        {menu:"온라인문의",url:"http://www.naver.com"},
+                        {menu:"커뮤니티",url:"http://www.naver.com"},
+                    ],
+                    noticeData:noticeData
+                }
+            }
+        }
+
+
+       Vue.createApp(myWeb).mount("#app");
+    </script>
+</body>
+</html>
