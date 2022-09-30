@@ -13,6 +13,8 @@
             text-decoration: none;
             color:#333
         }
+
+        /* header  */
         .container {
             width: 1000px;
             margin: 0 auto;
@@ -42,14 +44,50 @@
        
 
         /* banner  */
+        .banner h3{ 
+            text-align: center;
+            margin-bottom: 20px;
+        }
         .banner ul{ 
             display: flex;
-            gap:20px
+            gap:20px;
+            flex-wrap:wrap
         }
         .banner li {
-            width: calc( 100% / 6 );
+            width: calc( ( 100% - 40px )  / 3 );
         }
         .banner li img { 
+            width: 100%;
+        }
+        .banner li .img{ 
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            padding-top: 60%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* modal  */
+        .modal { 
+            width: 400px;
+            position: fixed;
+            left: 50%;top: 50%;
+            transform:translate(-50%,-50%);
+            background: white;
+            display: flex;
+            flex-direction:column;
+            justify-content: center;
+            align-items: center;
+            gap:10px;
+            padding: 30px 0;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        .modal .img{ 
+            width: 90%;
+        }
+        .modal img{
             width: 100%;
         }
     </style>
@@ -72,17 +110,31 @@
             </div>
         </header>
         <div class="container banner">
+            <h3>공지사항</h3>
             <ul>
                 <li v-for="(item,i) in noticeData">
-                    
-                        <img v-bind:src="`img/${item.img}`" alt="">
-                        <h4>{{noticeData[i].title}}</h4>
+                       
+                        <div class="img" :style="{'background-image':`url(img/${item.img})`}">
+                            <!-- <img v-bind:src="`img/${item.img}`" alt=""> -->
+                        </div>
+                        <h4 @click="modalView=true;modalNum=i">{{noticeData[i].title}}</h4>
                     
                 </li>
             </ul>
         </div>
         <div class="visual"></div>
         <footer class="footer"></footer>
+
+
+        <div class="modal" v-if="modalView == true">
+            <div class="img">
+                <img v-bind:src="`img/${noticeData[modalNum].img}`" alt="">
+            </div>
+            <h4>
+                {{noticeData[modalNum].title}}
+                <button @click = "modalView=false">닫기</button>
+            </h4>
+        </div>
     </div>               
 
     <script src="https://unpkg.com/vue@next"></script>
@@ -98,7 +150,9 @@
                         {menu:"온라인문의",url:"http://www.naver.com"},
                         {menu:"커뮤니티",url:"http://www.naver.com"},
                     ],
-                    noticeData:noticeData
+                    noticeData:noticeData,
+                    modalView:false,
+                    modalNum:0,
                 }
             }
         }
