@@ -53,7 +53,7 @@ h2 {
   justify-content: center;
   align-items: center;
 }
-.wrap>div {
+.wrap div {
   position: absolute;
 }
 .wrap div.txt1 {
@@ -71,7 +71,6 @@ h2 {
 .wrap div.txt3 {
   opacity: 0;
 }
-.vView div.active{background: white;}
 @-webkit-keyframes txtAni1 {
   50% {
     transform: translateY(0);
