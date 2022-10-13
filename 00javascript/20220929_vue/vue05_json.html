@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{ 
+            margin: 0;padding: 0;box-sizing: border-box;
+        }
+        ul,li{ 
+            list-style: none;
+        }
+        .tab {
+            display: flex;
+            gap:10px
+        }
+        .tab li {
+            width: 100px;
+            height: 40px;
+            display: flex;
+            justify-content: center;align-items: center;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .tab li.active {
+            background: skyblue;
+        }
+        .tab li:hover {
+            background: skyblue;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js" integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+
+    <div id="app">
+        <!-- <button @click="gogo">클릭</button> -->
+        
+        <ul>
+            <li v-for="(item,i) in albumData">
+                <img :src="item.thumbnailUrl" alt="">
+                {{item.title}}
+            </li>
+        </ul>
+     </div>               
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        const TabView = {
+            data(){
+                return {
+                    albumData:[],
+                }
+            },
+            created(){
+                this.gogo()
+            },
+            methods: {
+                gogo(){
+                    axios
+                    .get("https://jsonplaceholder.typicode.com/albums/1/photos")
+                    .then(v=>{
+                        console.log(v.data);
+                        let data = v.data;
+                        data.forEach(item=>{
+                            console.log(item)
+                            this.albumData.push(item)
+                        })
+                    })
+                }
+
+            }
+        }
+
+
+        Vue.createApp(TabView).mount("#app")
+    </script>
+</body>
+</html>
