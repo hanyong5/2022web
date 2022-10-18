@@ -1,0 +1,1259 @@
+<template>
+  <div>
+    <title-bar-n-role-buttons :fnCallFunc="$fnCallFunc" />
+    <!-- 조회 영역 -->
+    <div class="search_container">
+      <div class="row">
+        <div class="unit">
+          <span class="label">브랜드</span>
+          <common-selectbox
+              :options="srchBrandSelectBoxOpt"
+              :val="srchParams.brandCd"
+              v-on:commSelbox="
+              (val) => {
+                srchParams.brandCd = val;
+              }
+            "
+          />
+        </div>
+        <div class="unit">
+          <span class="label">대사결과</span>
+          <select v-model="srchParams.CORRECT_CHECK">
+            <option value="">전체</option>
+            <option value='Y'>동일</option>
+            <option value='N'>상이</option>
+          </select>
+        </div>
+        <!-- 10/21 조회 영역 수정 -->
+        <div class="unit">
+          <span class="label">주문상태</span>
+          <common-selectbox
+              :options="srchOrdStatSelectBoxOpt"
+              :val="srchParams.orderStatCd"
+              v-on:commSelbox="(val) => { srchParams.orderStatCd = val }"
+          />
+        </div>
+        <div class="unit">
+          <span class="label">주문일시</span>
+
+          <div class="f_inbl time_select">
+            <div class="inp_date">
+              <common-datepicker
+                  id="startDate"
+                  ref="startDate"
+                  v-model.trim="srchParams.startDate"
+                  :options="{}"
+              />
+            </div>
+          </div>
+          <div class="f_inbl time_select none_after">
+            <div class="inp_date">
+              <common-datepicker
+                  id="endDate"
+                  ref="endDate"
+                  v-model.trim="srchParams.endDate"
+                  :options="{}"
+              />
+            </div>
+          </div>
+        </div>
+        <!-- // 10/21 조회 영역 수정 -->
+        <div class="unit">
+          <span class="label">주문번호</span>
+          <input
+              type="text"
+              placeholder=""
+              v-model="srchParams.ORD_CD"
+              class="w_200"
+          />
+          <button class="s_btn red" @click="$fnInquire">조회</button>
+        </div>
+      </div>
+    </div>
+    <!-- // 조회 영역 -->
+    <!-- 10/22 대사결과 항목 추가 -->
+    <!-- 대사 결과 -->
+    <div>
+      <div class="con_tit has_margin">
+        <h3>대사 결과</h3>
+        <!-- 11/02 날짜,재호출 버튼 추가 -->
+        <div class="con_tit_option">
+          <div class="inp_date">
+            <common-datepicker
+                id="startDate"
+                ref="startDate"
+                v-model="recallDate"
+                :options="{}"
+            />
+          </div>
+          <button class="s_btn red" @click="recall">재호출</button>
+        </div>
+        <!-- // 11/02 날짜,재호출 버튼 추가 -->
+      </div>
+      <div class="form_table non_vertical wide">
+        <table>
+          <colgroup>
+            <col style="width: 100px" span="2" />
+            <col style="width: 100px" />
+            <col style="width: 200px" />
+            <col style="width: 100px" />
+            <col style="width: 200px" />
+            <col style="width: 100px" />
+            <col style="width: 200px" />
+            <col style="width: 100px" />
+            <col style="width: 200px" />
+            <col style="width: 100px" span="2" />
+          </colgroup>
+          <tbody>
+          <tr>
+            <th class="center" rowspan="3">결과</th>
+            <td class="center" rowspan="3">
+              <span>상이</span><span class="red">{{ DISCOR_CNTS }}</span>
+            </td>
+            <th class="center" colspan="3">쓱고우 배달수수료 총 금액(원)</th>
+            <td class="right" style="border-right: 1px solid">
+              {{ $formatPrice(this.TOP_RESULT.TOT_DLVR_AMT + this.TOP_RESULT.TOT_DVLR_ADD_AMT) }}
+            </td>
+            <th class="center" colspan="3">배달사 배달수수료 총 금액(원)</th>
+            <td class="right red">
+              {{ $formatPrice(this.TOP_RESULT.VROONG_TOT_BASE_FEE + this.TOP_RESULT.VROONG_TOT_EXTRA_FEE) }}
+            </td>
+            <th class="center" rowspan="3">차액(원)</th>
+            <td class="right" rowspan="3" v-if="this.DIFFER >=0">
+              {{ $formatPrice((this.TOP_RESULT.TOT_DLVR_AMT + this.TOP_RESULT.TOT_DVLR_ADD_AMT) - (this.TOP_RESULT.VROONG_TOT_BASE_FEE + this.TOP_RESULT.VROONG_TOT_EXTRA_FEE)) }}
+            </td>
+            <td class="right red" rowspan="3" v-else>- {{ $formatPrice((this.TOP_RESULT.TOT_DLVR_AMT + this.TOP_RESULT.TOT_DVLR_ADD_AMT) - this.TOP_RESULT.VROONG_TOT_BASE_FEE + this.TOP_RESULT.VROONG_TOT_EXTRA_FEE) }}</td>
+          </tr>
+          <tr>
+            <th class="right">배달수수료(원)</th>
+            <td class="right">{{ $formatPrice(this.TOP_RESULT.TOT_DLVR_AMT) }}</td>
+            <th class="right">과적(원)</th>
+            <td class="right" style="border-right: 1px solid"> {{ $formatPrice(this.TOP_RESULT.TOT_OVER_WEIGHT_FEE) }} </td>
+            <th class="right">배달수수료(원)</th>
+            <td class="right red"> {{$formatPrice(this.TOP_RESULT.VROONG_TOT_BASE_FEE)}}</td>
+            <th class="right">과적(원)</th>
+            <td class="right red"> {{ $formatPrice(this.TOP_RESULT.VROONG_TOT_WEIGHT_FEE) }}</td>
+          </tr>
+          <tr>
+            <th class="right">거리할증(원)</th>
+            <td class="right"> {{ $formatPrice(this.TOP_RESULT.ONDEMAND_TOTAL_DISTANCE_FEE) }} </td>
+            <th class="right"> 할증(원)</th>
+            <td class="right" style="border-right: 1px solid"> {{ $formatPrice(this.TOP_RESULT.TOT_DVLR_ADD_AMT) }}</td>
+            <th class="right">거리할증(원)</th>
+            <td class="right red"> {{ $formatPrice(this.TOP_RESULT.VROONG_TOT_DISTANCE_FEE) }}</td>
+            <th class="right">할증(원)</th>
+            <td class="right"> {{$formatPrice(this.TOP_RESULT.VROONG_TOT_EXTRA_FEE)}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- // 대사 결과 -->
+    <!-- // 10/22 대사결과 항목 추가 -->
+
+    <div>
+      <div class="con_tit">
+        <h3>일별대사</h3>
+        <p class="num">(건)</p>
+      </div>
+      <div class="form_table wide">
+        <table>
+          <colgroup>
+            <col style="width: 200px" />
+						<col style="width: 100px" />
+						<col style="width: 150px" />
+						<col style="width: 150px" />
+						<col style="width: 60px" />
+						<col style="width: 150px" />
+
+          </colgroup>
+          <thead>
+          <thead>
+          
+          <tr>
+            <th>일자</th>
+            <th>쑥고우(원)</th>
+            <th>메쉬(원)</th>
+            <th>차이(원)</th>
+            <th>확인여부</th>
+            <th>비고</th>
+            
+          </tr>
+          </thead>  
+        </table>
+      </div>
+    </div>
+
+
+    <!-- 11/02 주문 목록 Table 수정 -->
+    <!-- 10//22 주문 목록 Table 수정 -->
+    <!-- 주문 목록 -->
+    <div>
+      <div class="con_tit">
+        <h3>주문 목록</h3>
+        <p class="num">{{ totalCounts }} (건)</p>
+        <div class="con_tit_option">
+          <button class="btn_check"  v-if="cnt != 0">check</button>
+          <span class="sub_text"  v-if="cnt != 0">선택한 {{ cnt }}건</span>
+          <button class="btn_excel" @click="$dataExcel">다운로드</button>
+          <div class="f_inbl">
+            <select v-model="listSize" @change="$odd65000">
+              <option v-for="info in listSizeOptions" :value="info.cd">
+                {{ info.val }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- 주문 목록 Table -->
+      <div class="form_table wide">
+        <table>
+          <colgroup>
+            <col style="width: 50px" />
+            <col style="width: 100px" />
+            <col style="width: 200px" />
+            <col style="width: 200px" />
+            <col style="width: 150px" span="4" />
+            <col style="width: 200px" span="4" />
+            <col style="width: 150px" span="4" />
+            <col style="width: 150px" span="7" />
+          </colgroup>
+          <thead>
+          <tr>
+            <th rowspan="2">
+              <input
+                  type="checkbox"
+                  @change="$allChecked"
+                  v-model="checkAll"
+              />
+            </th>
+            <th rowspan="2">결과</th>
+            <th rowspan="2">주문번호</th>
+            <th colspan="11" style="border-right: 1px solid">쓱고우 주문내역</th>
+            <th colspan="9">배달수수료 내역 *매쉬코리아</th>
+          </tr>
+          <tr>
+            <th>주문일</th>
+            <th>주문금액(원)</th>
+            <th>총합(원)</th>
+            <th>자사부담배송비(원)</th>
+            <th>고객부담배송비(원)</th>
+            <th>배달수수료(원)</th>
+            <th>과적(원)</th>
+            <!--              <th>추가배달</th>-->
+            <th>거리할증(원)</th>
+            <th>할증(원)</th>
+            <th>주문상태</th>
+            <th style="border-right: 1px solid">거리(m)</th>
+            <th>배달요청일시</th>
+            <th>배달완료일시</th>
+            <th>총합(원)</th>
+            <th>배달수수료(원)</th>
+            <th>과적(원)</th>
+            <!--              <th>추가배달</th>-->
+            <th>거리할증(원)</th>
+            <th>할증(원)</th>
+            <th>배달상태</th>
+            <th>거리(m)</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr
+                v-for="(item, index) of odd65000List"
+                v-bind:key="index"
+                @click="$getDetail(item, index)"
+                ref="listItem"
+                :class="item.color"
+            >
+              <td class="center" @click.stop="doThis">
+                <input
+                    ref="checkYn"
+                    type="checkbox"
+                    name="CheckYn"
+                    true-value="Y"
+                    false-value="N"
+                    v-model="item.checkYn"
+                    @change="$changeCheck"
+                />
+              </td>
+              <td class="center" v-if="item.CORRECT_CHECK =='Y'">동일</td>
+              <td class="center" v-else>상이</td>
+              <td class="center" style="font-weight: bold">{{ item.ORD_CD }}</td>
+              <td class="center">{{ item.SALE_DTMS }}</td> <!-- 쓱고우 주문일 -->
+              <td class="right"> {{$formatPrice(item.NET_AMT)}}</td> <!-- 쓱고우 주문금액 -->
+              <td class="right"> {{ $formatPrice(item.NEW_DELIVERY_AMT) }}</td> <!-- 쓱고우 총합 -->
+              <td class="right">{{$formatPrice(item.ONDE_AMT)}}</td>
+              <td class="right">{{$formatPrice(item.CUST_PAID)}}</td>
+              <td class="right"> {{ $formatPrice(item.DLVR_AMT) }}</td> <!-- 쓱고우 배달수수료 -->
+              <td class="right">{{ $formatPrice(item.ONDEMAND_OVER_WEIGHT_FEE) }}</td> <!-- 쓱고우 과적 -->
+              <!--              <td class="right"> 2</td>-->
+              <td class="right"> {{ $formatPrice(item.ONDEMAND_DISTANCE_ADD_AMT) }} </td> <!-- 온디맨드 거리할증 -->
+              <td class="right"> {{ $formatPrice(item.DLVR_ADD_AMT) }}</td> <!-- 쓱고우 할증 -->
+              <td class="center">{{item.ORD_STAT_NM}}</td> <!-- 쓱고우 주문상태 -->
+              <td class="center" style="border-right: 1px solid">{{item.DLVR_METER}}</td> <!-- 쓱고우 거리 -->
+              <td class="center" v-if="item.CREATED_AT == null || item.CREATED_AT == ''"><span class="color_red">내역없음</span></td>
+              <td class="center" v-else> <span class="center">{{item.CREATED_AT}}</span></td>
+              <td class="center">{{item.COMPLETED_AT}}</td> <!-- 부릉 배달완료일 -->
+              <td class="right red"> {{$formatPrice(item.DELIVERY_FEE)}}</td> <!-- 부릉 총합 -->
+              <td class="right red"> {{$formatPrice(item.MINIMUM_FEE)}}</td> <!-- 부릉 배달수수료 -->
+              <td class="right red"> {{ $formatPrice(item.OVER_LOADED_AMT)}} </td> <!-- 부릉 과적 -->
+              <!--              <td class="right"> 2</td>-->
+              <td class="right"> {{$formatPrice(item.VROONG_OVER_DISTANCE_FEE)}}</td> <!-- 부릉 거리할증 -->
+              <td class="right">{{$formatPrice(item.EXTRA_FEE)}} </td> <!-- 부릉 할증 -->
+              <td class="center">{{item.STATUS}}</td> <!-- 부릉 배달상태 -->
+              <td class="center">{{item.DELIVERY_DISTANCE}}</td> <!-- 부릉 거리 -->
+            </tr>
+          </tbody>
+          <!-- <tfoot>
+            <tr>
+              <th class="center" colspan="2">합계</th>
+              <th class="center">상이 <span class="color_red">3</span></th>
+              <th class="center"></th>
+              <th class="right"> 154,563,400</th>
+              <th class="right"> 30,400</th>
+              <th class="right"> 3,000</th>
+              <th class="right"> 55,500</th>
+              <th class="center"></th>
+              <th class="center"></th>
+              <th class="center"></th>
+              <th class="right"> 30,000</th>
+              <th class="right">
+                <span class="color_red"> 6,000</span>
+              </th>
+              <th class="right">
+                <span class="color_red"> 58,500</span>
+              </th>
+              <th class="center"></th>
+            </tr>
+          </tfoot> -->
+        </table>
+      </div>
+      <div class="btn-pagination">
+        <!-- page navigation -->
+        <pagination
+            ref="pagination"
+            :clickFunc="$grdPageMove"
+            :pageModel="srchParams"
+            :totalRows="totalCounts"
+        />
+        <!-- // page navigation -->
+      </div>
+      <!-- // 주문 목록 Table -->
+      <!-- <div class="con_tit">
+        <div class="con_tit_option">
+          <button class="btn_excel">업로드</button>
+        </div>
+      </div> -->
+    </div>
+    <!-- // 주문 목록 -->
+    <!-- // 10//22 주문 목록 Table 수정 -->
+    <!-- // 11/02 주문 목록 Table 수정 -->
+    <div v-if="oddYN == 'Y'">
+      <!-- 대사결과 -->
+      <div>
+        <div class="con_tit">
+          <h3>대사결과</h3>
+        </div>
+        <!-- 11/02 대사결과 Table 수정 -->
+        <!-- 대사결과 Table -->
+        <div class="form_table">
+          <table>
+            <colgroup>
+              <col style="width: 150px" />
+              <col style="width: auto" />
+              <col style="width: 150px" />
+              <col style="width: auto" />
+            </colgroup>
+            <tbody>
+            <tr>
+              <th class="center">주문번호</th>
+              <td class="center">{{ resultOrd }}</td>
+              <th class="center">대사결과</th>
+              <td class="center" v-if="resultCheck == 'N'">
+                <span class="color_red">상이</span>
+              </td>
+              <td class="center" v-else><span>동일</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- // 대사결과 Table -->
+        <!-- // 11/02 대사결과 Table 수정 -->
+      </div>
+      <div>
+        <div class="con_tit">
+          <h3>대사결과 상세</h3>
+        </div>
+        <div class="ly_con w_5_5">
+          <div>
+            <div class="form_table">
+              <table>
+                <colgroup>
+                  <col style="width: 150px" />
+                  <col style="width: auto" />
+                </colgroup>
+                <thead>
+                <tr>
+                  <th colspan="2">쓱고우</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <th class="center">배달수수료(원)</th>
+                  <td class="right"> {{ $formatPrice(odd65000.DLVR_AMT) }}</td>
+                </tr>
+                <tr>
+                  <th class="center">거리(m)</th>
+                  <td class="right"> {{odd65000.DLVR_METER}}</td>
+                </tr>
+                <!--                  <tr>
+                                    <th class="center">과적추가</th>
+                                    <td class="right">{{odd65000.ADD_CNT}}</td>
+                                  </tr>-->
+                <tr>
+                  <th class="center">과적추가 수수료(원)</th>
+                  <td class="right"> {{ $formatPrice(odd65000.ONDEMAND_OVER_WEIGHT_FEE) }}</td>
+                </tr>
+                <!--                  <tr>
+                                    <th class="center">추가배차</th>
+                                    <td class="right"></td>
+                                  </tr>-->
+                <tr>
+                  <th class="center">추가배차 수수료(원)</th>
+                  <td class="right"> {{ $formatPrice(odd65000.ONDEMAND_ADD_FEE_AMT) }}</td>
+                </tr>
+                <tr>
+                  <th class="center">총 할증(원)</th>
+                  <td class="right"> {{ $formatPrice(odd65000.DLVR_ADD_AMT) }}</td>
+                </tr>
+                <tr>
+                  <th class="center">합계(원)</th>
+                  <td class="right">{{ $formatPrice((odd65000.NEW_TOT_DELIVERY_AMT) + (odd65000.ONDEMAND_ADD_FEE_AMT)) }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="form_table">
+              <table>
+                <colgroup>
+                  <col style="width: 150px" />
+                  <col style="width: auto" />
+                </colgroup>
+                <thead>
+                <tr>
+                  <th colspan="2">배달사 *매쉬코리아</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <th class="center">배달수수료(원)</th>
+                  <!--                    <td class="right">{{odd65000.DELIVERY_FEE}} </td>-->
+                  <td class="right">{{ $formatPrice(odd65000.BASE_FEE) }} </td>
+                </tr>
+                <tr>
+                  <th class="center">거리(m)</th>
+                  <td class="right">{{odd65000.DELIVERY_DISTANCE}}</td>
+                </tr>
+                <!--                  <tr>
+                                    <th class="center">과적추가</th>
+                                    <td class="right"></td>
+                                  </tr>-->
+                <tr>
+                  <th class="center">과적추가 수수료(원)</th>
+                  <td class="right" v-if="odd65000.VROONG_EXTRA_FEE_TYPE == 'UNCONDITIONAL'">
+                    {{ $formatPrice(odd65000.VROONG_EXTRA_FEE_AMOUNT) }}
+                  </td>
+                  <td class="right" v-else-if="odd65000.VROONG_EXTRA_FEE_TYPE != 'UNCONDITIONAL'">
+                    0
+                  </td>
+                </tr>
+                <!--                  <tr>
+                                    <th class="center">추가배차</th>
+                                    <td class="right"></td>
+                                  </tr>-->
+                <tr>
+                  <th class="center">추가배차 수수료(원)</th>
+                  <td class="right"> {{ $formatPrice(odd65000.VROONG_TOTAL_ADD_FEE) }}</td>
+                </tr>
+                <tr>
+                  <th class="center">총 할증(원)</th>
+                  <td class="right"> {{ $formatPrice(odd65000.EXTRA_FEE) }}</td>
+                </tr>
+                <tr>
+                  <th class="center">합계(원)</th>
+                  <td class="right">{{ $formatPrice((parseInt(odd65000.VROONG_TOT_AMT)) + (odd65000.VROONG_TOTAL_ADD_FEE)) }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <KakaoMap ref="kakaoMap" /> -->
+
+      <!-- // 대사결과 상세 -->
+      <!-- // 11/02 대사결과 상세 추가 -->
+    </div>
+  </div>
+</template>
+
+<script>
+// import KakaoMap from '@/pages/ondemand/odd65000map.vue'
+import mixinAppCommon from '@/pages/app/mixin/mixinAppCommon'
+import ondemandutil from '@/plugins/commonOndemandUtils'
+import cscript from '@/plugins/commonScripts'
+import Constant from '@/plugins/constant'
+import store from '@/vuex/store'
+import tuiGridUtils from '@/plugins/customTuiGridUtils'
+import ondemandTabs from '@/components/ondemandCommon/ondemandTabs.vue'
+import cutil from "@/plugins/commonUtils";
+
+export default {
+  name: 'odd65000',
+  components: {},
+  mixins: [mixinAppCommon],
+
+  data: function () {
+    return {
+      detailData: '',
+      detailDataOri: '',
+      odd65000List: [],
+      odd65000ListOri: [],
+      odd65000: '',
+      odd65000Ori: '',
+      DISCOR_CNT: 0,
+      placeSearch: 0,
+      autocomplete: 0,
+      mapLoaded: false,
+      oddYN: 'N',
+      distance: 0,
+      testing: 0,
+      checkAll: false,
+      cnt: 0,
+      storeTest: '강남권역',
+      odd65000ListDistance: [],
+      distanceList: [], // 거리 담는 리스트
+      resultOrd: '', // 대사 결과 주문번호
+      resultCheck: '', // 대사 결과 대사확인
+      DISCOR_CNTS: 0, // 상이 개수
+      DIFFER: 0, // 차액
+      totalCounts: 0, // 데이터 개수
+      TOT_DLVR_AMT: 0, // 배달수수료 총합
+      TOT_EXTRA_FEE: 0, //  배달사 할증 총합
+      TOT_CCL_AMT: 0, // 취소 수수료 총합
+      TOT_CUST_PAID: 0, // 고객부담료 총합
+      TOT_DLVR_ADD_AMT: 0, // 할즐 총 금액의 총합
+      TOT_DELIVERY_FEE: 0, // 배달앱 총 금액
+      ONDEMAND_OVER_WEIGHT_FEE: 0, // 쓱고우 과적 금액
+      TOP_RESULT: {
+        TOT_DLVR_AMT: 0,
+        TOT_DVLR_ADD_AMT: 0,
+        TOT_OVER_WEIGHT_FEE: 0,
+        VROONG_TOT_BASE_FEE: 0,
+        VROONG_TOT_EXTRA_FEE: 0,
+        VROONG_TOT_DISTANCE_FEE: 0,
+        VROONG_TOT_WEIGHT_FEE: 0
+      },
+      recallDate: this.$moment().add(-1, 'days').format('YYYY-MM-DD'),
+
+      odd65000ListTemplate: [
+        {
+          ORD_CD: '', // 주문번호
+          SALE_DTMS: '', // 주문일자
+          DLVR_AMT: '', // 배달수수료
+          ADD_CNT: '', // 과적 수
+          CUST_PAID: '', // 고객부담
+          DLVR_ADD_AMT: '', // 할증 총 금액
+          CCL_AMT: '', // 취소수수료
+          CCL_CD: '', // 취소코드
+          DLVR_ADD_DATA: '', // 할증이유
+          DLVR_LOG_CD: '', // 배송로그코드
+          DLVR_REQ_CD: '', // 배송요청코드
+          ORD_STAT_NM: '', // 주문상태
+          DLVR_TIME: '', // 배송일자
+          TOT_DLVR: '', // 배달수수료 총합
+          CORRECT_CHECK: '', // 동일/상이 체크
+          rowNums: '', // 글 행
+          DLVR_ADDR_ROAD: '', // 도로명 address역할
+          DLVR_STAT_CD: '', // 배송코드
+          AREA_CD: '', // 권역코드
+          DLVR_METER: '', // 거리
+          MININUM_FEE: '', // 배달앱 최소요금
+          DISTANCE_FEE: '', // 배달앱 거리 할증
+          BASE_FEE: '', // 배달앱 기본 요금
+          DELIVERY_FEE: '', // 배달앱 배달 요금
+          DELIVERY_DISTANCE: '', // 배달앱 거리
+          EXTRA_FEE: '', // 배달앱 할증
+          STATUS: '', // 배달앱 배달상태
+          DLV_DTMS: '' // 배달앱 날짜
+        }
+      ],
+
+      srchBrandSelectBoxOpt: {
+        // 조회 브랜드 콤보 박스 옵션
+        elName: 'srchBrand',
+        allText: 'text',
+        allValue: 'value',
+        dataLabelNm: 'codeNm',
+        dataValueNm: 'value',
+        width: '100px',
+        data: null
+      },
+      // 주문상태 조회 콤보 박스 옵션
+      srchOrdStatSelectBoxOpt: {
+        elName: 'srchOrdStat',
+        allText: 'text',
+        allValue: 'value',
+        dataLabelNm: 'codeNm',
+        dataValueNm: 'value',
+        width: '100px',
+        data: null
+      },
+      excelParams: {
+        brandCd: '', // 브랜드이름
+        pageNo: 1,
+        prevPageNo: 1,
+        size: 5,
+        ORD_CD: '',
+        CORRECT_CHECK: '',
+        excelCheck: 'N'
+      },
+
+      srchParams: {
+        brandCd: '', // 브랜드이름
+        pageNo: 1,
+        prevPageNo: 1,
+        size: 5,
+        ORD_CD: '',
+        CORRECT_CHECK: '',
+        startDate: this.$moment().add(-1, 'days').format('YYYYMMDD'),
+        endDate: this.$moment().add(-1, 'days').format('YYYYMMDD'),
+        /*        startDate: '20220127',
+                endDate: '20220127',*/
+        orderStatCd: ''
+      },
+      listSize: 5,
+      listSizeOptions: [
+        { cd: 5, val: ' 5개씩 보기' },
+        { cd: 10, val: '10개씩 보기' },
+        { cd: 20, val: '20개씩 보기' },
+        { cd: 30, val: '30개씩 보기' },
+        { cd: 40, val: '40개씩 보기' },
+        { cd: 50, val: '50개씩 보기' }
+      ],
+      selectList: [],
+
+      odd65000Template: {
+        ORD_CD: '', // 주문번호
+        DLVR_AMT: '', // 배달수수료
+        ADD_CNT: '', // 과적 수
+        CUST_PAID: '', // 고객부담료
+        DLVR_ADD_AMT: '', // 할증 총 금액
+        CCL_AMT: '', // 취소수수료
+        DLVR_ADD_DATA: '', // 할증사유
+        DLVR_METER: '', // 거리
+        DLVR_REQ_CD: '', // 배송요청코드
+        ORD_DLVR_AMT: '', // (임시) 배달사 배달수수료
+        TOT_DLVR: '', // 배달 총 수수료
+        CORRECT_CHECK: '', // 동이/상이
+        ADD_PRC: '', // 과적 배달료(수당 3000원)
+        DLVR_ADDR_ROAD: '', // 도로명 address역할
+        AREA_CD: '', // 권역코드
+        MININUM_FEE: '', // 배달앱 최소금액
+        DISTANCE_FEE: '', // 배달앱 거리금액
+        BASE_FEE: '', // 배달앱 기본금액
+        DELIVERY_DISTANCE: '', // 배달앱 거리
+        DELIVERY_FEE: '', // 배달앱 배달금액
+        EXTRA_FEE: '', // 배달앱 할증
+        EXTRA_FEE_DETAILS: '',// 배달앱 할증상세
+        ONDEMAND_ADD_FEE_AMT: 0 // 온디맨드 추가 배달 금액
+      },
+      pickDataListTemplate: [{
+        AREA_CD: '', // 권역코드
+        AREA_NM: '', // 권역명
+        PICK_POST_NO: '', // 우편번호
+        PICK_BASE_ADDR: '', // 도로명 주소
+        hardness: '', // 경도
+        latitude: '' // 위도
+      }],
+      sampleHard: [], // 권역 주소 경도 임시로 담기
+      sampleLati: [], // 권역 주소 위도 임시로 담기
+      pickDataList: [],
+      pickDataListOri: [],
+      pickupList: [
+
+      ],
+      pickData: [
+        {
+          stores: '논현권역',
+          code: '11001',
+          address: '서울 강남구 강남대로 512',
+          coordinate: [37.5078978596254, 127.023338614644]
+        },
+        {
+          stores: '광진권역',
+          code: '11002',
+          address: '서울 광진구 자양로42길 53',
+          coordinate: [37.5482531601518, 127.092937845605]
+        },
+        {
+          stores: '강남권역',
+          code: '11003',
+          address: '서울 강남구 개포로 617-8',
+          coordinate: [37.4940517008032, 127.077760130151]
+        },
+        {
+          stores: '중랑권역',
+          code: '11004',
+          address: '서울 중랑구 겸재로9길 45',
+          coordinate: [37.5884349591944, 127.077841909247]
+        },
+        {
+          stores: '동대문권역',
+          code: '11005',
+          address: '서울 동대문구 답십리로 210-3',
+          coordinate: [37.5722876733052, 127.063953717168]
+        },
+        {
+          stores: '논현권혁2',
+          code: '11009',
+          address: '서울 강남구 역삼로 310',
+          coordinate: [37.4992355425931, 127.048420861876]
+        },
+        {
+          stores: '청계권역',
+          code: '11012',
+          address: '서울 중구 청계천로 400',
+          coordinate: [37.5708105464699, 127.021463886656]
+        },
+
+        {
+          stores: '성수권역',
+          code: '11013',
+          address: '서울 성동구 뚝섬로 379',
+          coordinate: [37.5399292282845, 127.053494215652]
+        },
+        {
+          stores: '논현권역',
+          code: '11014',
+          address: '서울 강남구 강남대로 512',
+          coordinate: [37.5078978596254, 127.023338614644]
+        },
+        {
+          stores: '권역',
+          code: '25001',
+          address: '서울 중구 퇴계로 97',
+          coordinate: [37.5609575542822, 126.982545572081]
+        }
+      ]
+    }
+  },
+
+  computed: {},
+
+  mounted: function mounted () {
+    //  if (window.kakao && window.kakao.maps) {
+    //    this.initMap();
+    //   console.log("@@@@@")
+    // } else {
+    /*    const script = document.createElement('script')
+        /!* global kakao *!/
+        script.onload = () => kakao.maps.load()
+        script.type = 'text/javascript'
+        script.src =
+          //      '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=915cffed372954b7b44804ed422b9cf0&libraries=services,clusterer,drawing';
+          '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=d5284b5170b7ffb305c5e80cdba9c566&libraries=services,clusterer,drawing'
+        document.head.appendChild(script)*/
+
+    // }
+    const _refs = this.$refs // ref들
+    this.grd = _refs.grd // 그리드
+    this.grdDetail = _refs.grdDetail;
+    (async (_) => {
+      const ondemandParam = ['BRD01', 'USE01'] // 리스트 구분 코드
+      const ondemandOrdStatParam = {
+        groupCode: 'COM00',
+        grpCd: 'ORD_STAT_CD'
+      } // 주문상태 코드
+      const ondemandCmnCodeList = await ondemandutil.$getSrchCmmnCodes(ondemandParam)
+      const ondemandOrdStatCodeList = await ondemandutil.$getSrchCmmnCodesForPrams(ondemandOrdStatParam)
+
+      this.brandList = ondemandCmnCodeList.BRD01 // 브랜드 리스트(조건 없이 전부)
+      this.useYnList = ondemandCmnCodeList.USE01
+
+      // this.srchParams.brandCd = this.brandList[0];
+      this.srchBrandSelectBoxOpt.data = cscript.$getComboOptions(
+          this.brandList,
+          { head: 'A' }
+      ) // 브랜드 리스트에 "전체"를 추가 하고 콤보 박스 옵션 형태로 변경
+      this.srchOrdStatSelectBoxOpt.data = cscript.$getComboOptions(
+          ondemandOrdStatCodeList.COM00,
+          { head: 'A' }
+      )
+      this.$initData()
+      this.$fnInquire()
+    })()
+  },
+
+  methods: {
+    recall () {
+      if (this.recallDate.indexOf('-') == -1) {
+        let year = this.recallDate.substring(0, 4)
+        let month = this.recallDate.substring(4, 6)
+        let day = this.recallDate.substring(6, 8)
+        this.recallDate = year + '-' + month + '-' + day
+      }
+      console.log('=== recall, date: ', this.recallDate)
+      const url = 'ondemandapi/dlvrapi/deliverySettleDaily'
+      let headers = {
+        'Content-Type': 'application/json',
+        'systemcode': '2001',
+        'companycode': '9995',
+        'storecode': '2001',
+        'terminalcode': '0101',
+        'Date': this.recallDate
+      }
+      console.log('===== headers: ', headers)
+      this.$axios.post(url, headers).then(async (res) => {
+        console.log('recall res: ', res)
+        if (res.RET_CD == '0000') {
+          console.log('재호출 성공')
+          ondemandutil.$alert('재호출 완료')
+          await this.$fnInquire()
+        } else {
+          ondemandutil.$alert(res.RET_MSG)
+        }
+      })
+    },
+    $formatPrice (num) {
+      if (isNaN(num)) { return '0' }
+
+      var reg = /(^[+-]?\d+)(\d{3})/
+      var n = (num + '')
+      while (reg.test(n)) { n = n.replace(reg, '$1' + ',' + '$2') }
+
+      return n
+    },
+    $initOdd65000List () {
+      this.odd65000List = this._.cloneDeep(this.odd65000ListTemplate)
+      this.odd65000ListOri = this._.cloneDeep(this.odd65000List)
+    },
+
+    $initOdd65000 () {
+      this.odd65000 = this._.cloneDeep(this.odd65000Template)
+      this.odd65000Ori = this._.cloneDeep(this.odd65000)
+    },
+
+    $initData () {
+      this.$initOdd65000List()
+      this.$initOdd65000()
+    },
+
+    $grdPageMove () {
+      this.$odd65000(this.srchParams.pageNo)
+    },
+
+    $fnInquire () {
+      // 날짜 dateTime 형식으로 변환
+      let tmpSdate = this.srchParams.startDate
+      let tmpEdate = this.srchParams.endDate
+      tmpSdate = this.$moment(tmpSdate).format('YYYY-MM-DD')
+      tmpEdate = this.$moment(tmpEdate).format('YYYY-MM-DD')
+
+      if (tmpSdate > tmpEdate) {
+        cutil.$alert(this.$t('시작일자는 종료일자보다 빠를 수 없습니다.'))
+        return false
+      }
+
+      this.$odd65000('Y')
+    },
+    $getDetail (item, index) {
+      this.resultOrd = item.ORD_CD
+      this.resultCheck = item.CORRECT_CHECK
+
+      this.$odd65010(item)
+
+      for (let i in this.odd65000List) {
+        if (i == index) {
+          // this.log(i+"와 인덱스는?"+index)
+          this.odd65000List[i].color = 'selected_item'
+        } else {
+          //  this.log("else 안에 "+i+"와 인덱스는?"+index)
+          if (this.odd65000List[i].CORRECT_CHECK == 'N') {
+            this.odd65000List[i].color = this.odd65000List[i].color.replaceAll(
+                'selected_item',
+                'red_item'
+            )
+          } else if (this.odd65000List[i].CORRECT_CHECK == 'Y') {
+            this.odd65000List[i].color = this.odd65000List[i].color.replaceAll(
+                'selected_item',
+                'white'
+            )
+          }
+        }
+      }
+
+      this.oddYN = 'Y'
+    },
+
+    async $dataExcel () {
+      this.selectList = this.odd65000List.filter((e) => e.checkYn == 'Y')
+      if (this.totalCounts > 0) {
+        if (this.selectList.length > 0) {
+          this.excelParams.excelCheck = 'Y'
+          this.log(this.selectList.rowNums)
+        }
+
+        this.excelParams.pageNo = this.srchParams.pageNo
+        this.excelParams.prevPageNo = this.srchParams.pageNo
+        this.excelParams.size = this.listSize
+        this.excelParams.pageSize = this.listSize
+
+        const url = '/ondemandapi/odd65000/odd65001' // 호출 URL
+        let config = this._.cloneDeep(this.excelParams)
+        console.log('====== odd65001, params: ', config)
+        this.$axios.post(url, config)
+            .then(res => {
+              console.log('odd65001 res: ', res)
+              let fileName =
+                  'ONDEMAND_ORDER_orderambassador_' + this.$moment().format('YYYYMMDDHHmmSS') + '.xls'
+              config.fileName = fileName
+              cutil.$downloadFileFromUrl(url, config)
+            }).catch(error => {
+          console.log('odd65001 error: ', error)
+        }) // end axios
+
+/*        const url = '/ondemandapi/odd65000/odd65001'
+        const url2 = '/ondemandapi/odd65000/odd65002'
+        this.excelParams.pageNo = this.srchParams.pageNo
+        this.excelParams.prevPageNo = this.srchParams.pageNo
+        this.excelParams.size = this.listSize
+        this.excelParams.pageSize = this.listSize
+        // this.excelParams.rowNums = this.selectList.rowNums;
+        var query = ''
+        var separator = '?'
+        for (var key in this.excelParams) {
+          query += separator + key + '=' + this.excelParams[key]
+          separator = '&'
+          // this.log("query는??"+query)
+        }
+        this.excelParams.excelCheck == 'N' ? location.href = url + query
+            : this.$axios.post(url2, this.selectList)*/
+      }
+
+      this.excelParams.excelCheck = 'N'
+    },
+
+    $allChecked (e) {
+      if (e.target.checked) {
+        if (this.cnt > 0) {
+          this.cnt = 0
+          for (let i in this.$refs.checkYn) {
+            this.$refs.checkYn[i].checked = e.target.checked
+            this.odd65000List[i].checkYn = e.target.checked ? 'Y' : 'N'
+            this.cnt++
+          }
+        } else {
+          for (let i in this.$refs.checkYn) {
+            this.$refs.checkYn[i].checked = e.target.checked
+            this.odd65000List[i].checkYn = e.target.checked ? 'Y' : 'N'
+            this.cnt++
+            // this.log("for 문!!!"+this.cnt);
+          }
+        }
+      } else {
+        for (let i in this.$refs.checkYn) {
+          this.$refs.checkYn[i].checked = e.target.checked
+          this.odd64000List[i].checkYn = e.target.checked ? 'Y' : 'N'
+          this.cnt = 0
+          // this.log("for 문!!!"+this.cnt);
+        }
+      }
+
+      this.log(this.cnt)
+    },
+
+    $changeCheck (e) {
+      if (e.target.checked) {
+        this.cnt++
+        console.log(this.cnt)
+      } else {
+        this.checkAll = false
+        this.cnt--
+      }
+    },
+
+    /* async initMap (addr) { // 세부사항 거리 계산
+       var pickData = this.pickData
+       var storeTest = this.storeTest
+       var distance = this.distance
+       let _this = this
+       console.log(_this)
+       let _ref = this.$refs
+       console.log(kakao.maps.services)
+       // console.log(window.kakao.maps)
+       var geocoder = new kakao.maps.services.Geocoder()
+       var polyline = new kakao.maps.Polyline()
+       var callback = function (result, status) {
+         // console.log(this.pickData)
+
+         if (status === kakao.maps.services.Status.OK) {
+           var newPath = []
+
+           for (let i in pickData) {
+             if (pickData[i].stores != null || pickData[i].stores != '') {
+               if (pickData[i].stores == storeTest) {
+                 // storeTest 는 나중에 코드가 될 부분
+
+                 console.log('>>>' + result[0].y, result[0].x)
+                 newPath = [
+                   new kakao.maps.LatLng(result[0].y, result[0].x),
+                   new kakao.maps.LatLng(
+                     pickData[i].coordinate[0],
+                     pickData[i].coordinate[1]
+                   )
+                 ]
+                 console.log(newPath)
+
+                 polyline.setPath(newPath)
+                 // console.log(polyline);
+
+                 console.log(polyline)
+                 var distance = Math.round(polyline.getLength())
+
+                 _this.testing = distance
+               }
+             }
+           }
+         }
+       }
+
+       console.log(this.odd65000List)
+       // geocoder.addressSearch('서울 성동구 뚝섬로 379', callback); //픽업지 주소 위도 경도 테스트 용
+       await geocoder.addressSearch(addr, callback) // 주소를 넣어야 할 값 주문 주소
+     },*/
+
+    /*  async odd65000Ad (addrs, area) { // 리스트 거리 계산
+  /!*      console.log(addrs) // 결제한 사람의 주소
+        console.log(area) // 결제 권역*!/
+        // console.log(addrs);
+        var pickData = this.pickData
+        var storeTest = this.storeTest
+
+        let _this = this
+        console.log(kakao.maps.services)
+        // console.log(window.kakao.maps)
+        var geocoder = new kakao.maps.services.Geocoder()
+        var polyline = new kakao.maps.Polyline()
+        var callback = function (result, status) {
+          // console.log(this.pickData)
+
+          if (status === kakao.maps.services.Status.OK) {
+            console.log(_this)
+            var newPath = []
+
+            for (let i in _this.pickupList) {
+              if (_this.pickupList[i].PICK_BASE_ADDR != null || _this.pickupList[i].PICK_BASE_ADDR != '') {
+                if (_this.pickupList[i].AREA_CD == area) {
+                  // console.log(i);
+                  console.log(_this.pickupList[i].hardness[i])
+                  // console.log("qwer" + result[0].y, result[0].x); //픽업지 주소 확인
+                  newPath = [
+                    new kakao.maps.LatLng(result[0].y, result[0].x),
+                    new kakao.maps.LatLng(
+                      _this.pickupList[i].hardness,
+                      _this.pickupList[i].latitude
+                    )
+                  ]
+                  // console.log(newPath);
+
+                  polyline.setPath(newPath)
+                  console.log(polyline)
+
+                  // this.log("@@1112번 로그 찍히는가")
+                  var distance = Math.round(polyline.getLength())
+                  console.log(Math.round(polyline.getLength()))
+                  _this.odd65000ListDistance.push(distance)
+                  console.log(_this.odd65000ListDistance)
+                  _this.distanceList = _this.odd65000ListDistance
+                }
+              }
+            }
+          }
+        }
+
+        console.log(this.odd65000.DLVR_ADDR_ROAD)
+        // geocoder.addressSearch('서울 성동구 뚝섬로 379', callback); //픽업지 주소 위도 경도 테스트 용
+        await geocoder.addressSearch(addrs, callback) // 주소를 넣어야 할 곳
+      },*/
+
+    async $odd65010 (item) {
+      this.log(item)
+      const url = '/ondemandapi/odd65000/odd65010'
+      const config = { ORD_CD: item.ORD_CD, AGENT_DLVR_ID: item.AGENT_DLVR_ID }
+      await this.$axios.post(url, config).then((response) => {
+        this.log('odd65010 res: ', response)
+        this.odd65000 = response
+
+        /*        if (response.length > 0) {
+                  let addr = this.odd65000.DLVR_ADDR_ROAD
+                  this.initMap(addr)
+                  if (response.DLVR_REQ_CD == '추가요청') {
+
+                  }
+                }*/
+        ondemandutil.initData(this.odd65000Template, this.odd65000)
+        if (!cscript.$isEmpty(this.odd65000.isEnd)) {
+          this.$refs.dtlDispYn.disabled = true
+        }
+
+        this.odd65000Ori = this._.cloneDeep(this.odd65000)
+
+        // this.srchParams.distance = this._refs.test.value;
+
+        // this.pageMode = 'U';
+      })
+    },
+
+    /*    async $odd65002 () { // 권역 조회 (위도 경도 용)
+          this.pickDataList = []
+          const url = '/ondemandapi/odd65000/odd65002'
+          await this.$axios.get(url).then((response) => {
+            this.log(url, response)
+            this.pickDataList = response.picklist
+            ondemandutil.initDataWithArray(
+              this.pickDataListTemplate,
+              this.pickDataList
+            )
+            const coordinate = { coordinate: [] }
+            this.pickupList = this._.cloneDeep(this.pickDataList)
+            this.pickup()
+          })
+        },*/
+
+    async pickup () { // 권역에 따른 픽업지
+      let _this = this
+      console.log(_this)
+      let _ref = this.$refs
+
+      console.log(kakao.maps.services)
+      // console.log(window.kakao.maps)
+      var geocoder = new kakao.maps.services.Geocoder()
+
+      var callback = function (result, status) {
+        // console.log(this.pickData)
+
+        if (status === kakao.maps.services.Status.OK) {
+          console.log('>>>' + result[0].y, result[0].x)
+          _this.sampleHard.push(result[0].y)
+          _this.sampleLati.push(result[0].x)
+
+          for (let i in _this.pickupList) {
+            _this.pickupList[i].hardness = _this.sampleHard[i] // 경도 pickupList배열에 푸시
+            _this.pickupList[i].latitude = _this.sampleLati[i] // 위도 pickupList배열에 푸시
+          }
+
+          // console.log(_this.sampleHard)
+          // console.log(_this.sampleLati)
+        }
+      }
+
+      // geocoder.addressSearch('서울 성동구 뚝섬로 379', callback); //픽업지 주소 위도 경도 테스트 용
+      for (let i in this.pickupList) {
+        await geocoder.addressSearch(this.pickupList[i].PICK_BASE_ADDR, callback) // 픽업지에 따른 위도 경도
+      }
+      this.log(this.pickupList)
+    },
+
+    async $odd65000 (tag) {
+      this.odd65000ListDistance = []
+      if (tag == 'Y') {
+        this.srchParams.pageNo = 1
+        this.oddYN = 'N'
+      }
+      this.cnt = 0
+      this.checkAll = false
+      this.srchParams.prevPageNo = this.srchParams.pageNo
+      this.srchParams.size = this.listSize
+      this.srchParams.pageSize = this.listSize
+      const url = '/ondemandapi/odd65000/odd65000'
+      let params = this._.cloneDeep(this.srchParams)
+      // this.log(params);
+      params.pageNo = this.srchParams.pageNo
+      params.prevPageNo = this.srchParams.prevPageNo
+      params.pageSize = this.srchParams.size
+      /*      this.$odd65002()*/
+      await this.$axios.post(url, params).then((response) => {
+        this.log(url, response)
+        this.odd65000List = response.list
+        this.TOP_RESULT = response.topResultMap
+        console.log('============== TOP_RESULT: ', this.TOP_RESULT)
+        console.log('odd65000ListTemplate: ', this.odd65000ListTemplate)
+        console.log('odd65000List: ', this.odd65000List)
+        console.log()
+        ondemandutil.initDataWithArray(this.odd65000ListTemplate, this.odd65000List)
+        if (response.list.length > 0) {
+          this.totalCounts = response.list[0].totalCounts
+          this.TOT_DLVR_AMT = response.list[0].TOT_DLVR_AMT
+          this.TOT_CCL_AMT = response.list[0].TOT_CCL_AMT
+          this.TOT_CUST_PAID = response.list[0].TOT_CUST_PAID
+          this.TOT_EXTRA_FEE = response.list[0].TOT_EXTRA_FEE
+          this.TOT_DLVR_ADD_AMT = response.list[0].TOT_DLVR_ADD_AMT
+          this.DISCOR_CNTS = response.list[0].DISCOR_CNTS
+          this.TOT_DELIVERY_FEE = response.list[0].TOT_DELIVERY_FEE
+          this.DIFFER = response.list[0].DIFFER
+
+          for (let index in this.odd65000List) {
+            let item = this.odd65000List[index].CORRECT_CHECK
+            let addrs = this.odd65000List[index].DLVR_ADDR_ROAD // 주문자의 주소
+            let area = this.odd65000List[index].AREA_CD // 결제된 곳AREA_CD(권역번호)
+            // this.log(item);
+            // this.log(index);
+            // this.log(addrs);
+            // this.log(">>>>>>>>>>>>>>>>>>>>>>>>>"+this.pickDataList);
+            /*            this.odd65000Ad(addrs, area)*/
+
+            if (this.odd65000List[index].CORRECT_CHECK == 'N') {
+              // this.$refs.listItem[index].style.background="#FFB6C1";
+              this.odd65000List[index].color = 'red_item'
+            } else {
+              // this.$refs.listItem[index].style.background="#FFFF";
+              this.odd65000List[index].color = 'white'
+            }
+          }
+
+          // this.detailDataOri = this._.cloneDeep(this.detailData); //row 전체 데이터 원본 백업
+        } else {
+          this.totalCounts = 0
+          this.srchParams.pageNo = 1
+          this.TOT_DLVR_AMT = 0
+          this.TOT_CCL_AMT = 0
+          this.TOT_CUST_PAID = 0
+          this.TOT_DLVR_ADD_AMT = 0
+          this.DISCOR_CNTS = 0
+          this.DIFFER = 0
+          this.TOT_DELIVERY_FEE = 0
+          this.TOP_RESULT = {}
+        }
+        this.odd65000ListOri = this._.cloneDeep(this.odd65000List)
+      })
+    }
+  }
+}
+</script>
+<style>
+.red_item {
+  background-color: #ffb6c1;
+}
+.selected_item {
+  background-color: #ffe4c4;
+}
+</style>
+<style scoped>
+::v-deep .datepicker_edge {
+  left:-140%;
+}
+</style>
