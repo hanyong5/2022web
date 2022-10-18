@@ -1,0 +1,1026 @@
+<template>
+	<div>
+		<!-- 대타이틀 -->
+		<title-bar-n-role-buttons
+			:fnCallFunc="$fnCallFunc"
+			ref="titleNRoleBtn"
+		/>
+		<!-- //대타이틀 -->
+
+		<!-- 조화 영역 -->
+		<div class="search_container">
+			<div class="row">
+				<div class="unit">
+					<span class="label">대사결과</span>
+					<select v-model="srchParams.correctCheck">
+						<option value="">전체</option>
+						<option value="Y">정상</option>
+						<option value="N">이상</option>
+					</select>
+				</div>
+
+				<!-- <div class="unit">
+					<span class="label">주문상태</span>
+					<common-selectbox
+						:options="srchOrdStatSelectBoxOpt"
+						:val="srchParams.orderStatCd"
+						v-on:commSelbox="
+							(val) => {
+								srchParams.orderStatCd = val;
+							}
+						"
+					/>
+				</div> -->
+				<div class="unit">
+					<span class="label">주문일</span>
+					<div class="f_inbl time_select">
+						<div class="inp_date">
+							<common-datepicker
+								id="startDate"
+								ref="startDate"
+								v-model.trim="srchParams.startDate"
+								:options="{}"
+							/>
+							<!-- <span class="tui-ico-date"></span> -->
+						</div>
+					</div>
+					<div class="f_inbl time_select none_after">
+						<div class="inp_date">
+							<common-datepicker
+								id="endDate"
+								ref="endDate"
+								v-model.trim="srchParams.endDate"
+								:options="{}"
+							/>
+							<!-- <span class="tui-ico-date"></span> -->
+						</div>
+					</div>
+				</div>
+				<div class="unit">
+					<!-- <select name="" id="" v-model="srchParams.srchDiv">
+						<option value="OND">쓱고우</option>
+						<option value="STAR">스타벅스</option>
+					</select> -->
+					<span class="label">주문번호</span>
+					<input
+						type="text"
+						placeholder=""
+						v-model="srchParams.orderNo"
+						class="w_200"
+						@keyup.enter="$fnInquire"
+					/>
+					<button class="s_btn red" @click="$fnInquire">조회</button>
+				</div>
+			</div>
+		</div>
+		<!-- // 조회 영역 -->
+		<!-- 브랜드별 PG 결제금액 합 대사 목록 -->
+		<div class="con_tit has_margin">
+			<h3>일별 결제금액 목록</h3>
+			<div class="btn">
+				<button class="btn_excel" @click="$brandExcel">다운로드</button>
+			</div>
+		</div>
+
+		<div>
+			<!-- 테이블 -->
+			<div class="form_table wide side_line">
+				<table>
+					<colgroup>
+						<col style="width: 100px" />
+						<col style="width: 100px" />
+						<col style="width: 60px" />
+						<col style="width: 150px" />
+						<col style="width: 150px" />
+						<col style="width: 150px" />
+						<col style="width: 150px" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th rowspan="2">기간</th>
+							<th rowspan="2">구분</th>
+							<th rowspan="2">결과</th>
+							<th colspan="2">쓱고우</th>
+							<th colspan="2">결제사 (INICIS)</th>
+						</tr>
+						<tr>
+							<th colspan="2">금액(원)</th>
+							<th colspan="2">금액(원)</th>
+						</tr>
+						<tr>
+							<th>일자</th>
+							<th>브랜드</th>
+							<th>정상/이상</th>
+							<th>결제금액</th>
+							<th>취소금액</th>
+							<th>합계</th>
+							<th>취소금액</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="bg_beige">
+							<td class="center">합계</td>
+							<td class="center">{{ srchItem.brandNm }}</td>
+							<td
+								class="center"
+								v-if="odd92001.CORRECT_CHECK == 'Y'"
+							>
+								정상
+							</td>
+							<td class="center color_red" v-else>이상</td>
+							<td class="right">
+								{{ $commaNumber(odd92001.TOT_PAYMENT_AMT) }}
+							</td>
+							<td class="right">
+								{{ $commaNumber(odd92001.TOT_CANCEL_AMT) }}
+							</td>
+							<td class="right">
+								{{ $commaNumber(odd92001.TOT_TR_AMT) }}
+							</td>
+							<td class="right">
+								{{ $commaNumber(odd92001.TOT_CANCLE_TR_AMT) }}
+							</td>
+						</tr>
+
+						<tr
+							v-for="(item, index) of odd92002List"
+							v-bind:key="index"
+						>
+							<td
+								class="center"
+								v-show="item.DATE_RN == '1'"
+								:rowspan="item.DATE_CNT"
+								style="vertical-align: middle"
+							>
+								{{ item.PAYMENT_DTMS }}
+							</td>
+							<td class="center" @click="$rowClick(item, index)">
+								{{ item.BRAND_NM }}
+							</td>
+							<td
+								class="center"
+								v-if="item.CORRECT_CHECK == 'Y'"
+								v-show="item.DATE_RN == '1'"
+								:rowspan="item.DATE_CNT"
+								style="vertical-align: middle"
+							>
+								정상
+							</td>
+							<td
+								class="center color_red"
+								v-show="item.DATE_RN == '1'"
+								:rowspan="item.DATE_CNT"
+								style="vertical-align: middle"
+								v-else
+							>
+								이상
+							</td>
+							<td class="right" @click="$rowClick(item, index)">
+								{{ $commaNumber(item.PAYMENT_AMT) }}
+							</td>
+							<td class="right" @click="$rowClick(item, index)">
+								{{ $commaNumber(item.CANCEL_AMT) }}
+							</td>
+							<td
+								class="right"
+								v-show="item.DATE_RN == '1'"
+								:rowspan="item.DATE_CNT"
+								style="vertical-align: middle"
+							>
+								{{ $commaNumber(item.TOT_TR_AMT) }}
+							</td>
+							<td
+								class="right"
+								v-show="item.DATE_RN == '1'"
+								:rowspan="item.DATE_CNT"
+								style="vertical-align: middle"
+							>
+								{{ $commaNumber(item.TOT_CANCLE_TR_AMT) }}
+							</td>
+						</tr>
+						<!-- <tr>
+							<td class="center">2021-11-24</td>
+							<td class="center">이마트</td>
+							<td class="center">정상</td>
+							<td class="right">14,500</td>
+							<td class="right">-14,500</td>
+							<td class="center">2</td>
+							<td class="center">1</td>
+							<td class="center">1</td>
+							<td class="right">14,500</td>
+							<td class="right">-14,500</td>
+							<td class="center">2</td>
+							<td class="center">1</td>
+							<td class="center">1</td>
+						</tr>
+						<tr>
+							<td class="center">2021-11-24</td>
+							<td class="center">스타벅스</td>
+							<td class="center color_red">이상</td>
+							<td class="right">13,000</td>
+							<td class="right">-13,000</td>
+							<td class="center">2</td>
+							<td class="center">1</td>
+							<td class="center">1</td>
+							<td class="right">13,000</td>
+							<td class="right">-12,000</td>
+							<td class="center">2</td>
+							<td class="center">1</td>
+							<td class="center">1</td>
+						</tr>
+						<tr>
+							<td class="center">2021-11-24</td>
+							<td class="center">신세계 L&B</td>
+							<td class="center">정상</td>
+							<td class="right">36,700</td>
+							<td class="right">-13,700</td>
+							<td class="center">3</td>
+							<td class="center">2</td>
+							<td class="center">1</td>
+							<td class="right">36,700</td>
+							<td class="right">-13,700</td>
+							<td class="center">3</td>
+							<td class="center">2</td>
+							<td class="center">1</td>
+						</tr> -->
+					</tbody>
+				</table>
+			</div>
+			<!-- //테이블 -->
+
+			<!-- page navigation -->
+			<div class="btn-pagination">
+				<pagination
+					ref="pagination"
+					:clickFunc="$grdDatePageMove"
+					:pageModel="srchDateParams"
+					:totalRows="totalDateCnt"
+					v-show="totalDateCnt > srchDateParams.size"
+				/>
+				<!-- <ul class="pagination">
+					<li><span class="page-link">&lt;&lt;</span></li>
+					<li><span class="page-link">&lt;</span></li>
+					<li>
+						<a href="javascript:void(0)" class="page-link on">1</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">2</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">3</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">4</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">5</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">6</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">7</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">8</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">9</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">10</a>
+					</li>
+					<li><span class="page-link">&gt;</span></li>
+					<li><span class="page-link">&gt;&gt;</span></li>
+				</ul> -->
+			</div>
+			<!-- // page navigation -->
+		</div>
+		<!-- //브랜드별 PG 결제금액 합 대사 목록 -->
+		<!-- 건별 PG 결제금액 대사 목록 -->
+		<div v-show="odd92003On == 'Y'">
+			<div class="con_tit has_margin">
+				<h3>브랜드별 상세 결제금액</h3>
+				<p class="num">[ 총 {{ totalOrderCnt }} 건 ]</p>
+				<div class="btn">
+					<button class="btn_excel" @click="$orderExcel">
+						다운로드
+					</button>
+				</div>
+			</div>
+			<div>
+				<!-- 테이블 -->
+				<div class="form_table wide side_line case_table">
+					<table>
+						<colgroup>
+							<col style="width: 150px" />
+							<col style="width: 100px" />
+							<col style="width: 120px" />
+							<col style="width: 120px" />
+							<col style="width: 80px" />
+							<col style="width: 60px" />
+							<col style="width: 80px" />
+							<col style="width: 150px" />
+							<col style="width: 150px" />
+							<col style="width: 150px" />
+							<col style="width: 150px" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th rowspan="2">주문번호</th>
+								<th rowspan="2">브랜드</th>
+								<th rowspan="2">매장명</th>
+								<th rowspan="2">영업일시</th>
+								<th rowspan="2">결제수단</th>
+								<th rowspan="2">결제구분</th>
+								<th rowspan="2">결과</th>
+								<th colspan="2">쓱고우</th>
+								<th colspan="2">결제사</th>
+							</tr>
+							<tr>
+								<th>승인금액(원)</th>
+								<th>취소금액(원)</th>
+								<th>승인금액(원)</th>
+								<th>취소금액(원)</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="bg_beige">
+								<td class="center" colspan="3">합계</td>
+								<td class="center"></td>
+								<td class="center"></td>
+								<td class="center"></td>
+								<td
+									class="center"
+									v-if="odd92003.CORRECT_CHECK == 'Y'"
+								>
+									정상
+								</td>
+								<td class="center color_red" v-else>이상</td>
+								<td class="right">
+									{{ $commaNumber(odd92003.PAYMENT_AMT) }}
+								</td>
+								<td class="right">
+									{{ $commaNumber(odd92003.CANCEL_AMT) }}
+								</td>
+								<td class="right">
+									{{ $commaNumber(odd92003.TR_AMT) }}
+								</td>
+								<td class="right">
+									{{ $commaNumber(odd92003.CANCLE_TR_AMT) }}
+								</td>
+							</tr>
+							<tr
+								v-for="(item, index) of odd92004List"
+								v-bind:key="index"
+							>
+								<td
+									class="center"
+									v-show="item.BRD_ORD_RN == '1'"
+									:rowspan="item.BRD_ORD_CNT"
+									style="vertical-align: middle"
+								>
+									{{
+										item.ORG_ORDER_NO != undefined
+											? item.ORG_ORDER_NO
+											: item.ORDER_NO
+									}}
+								</td>
+								<td class="center">{{ item.BRAND_NM }}</td>
+								<td class="center">{{ item.TNANT_NM }}</td>
+								<td class="center">{{ item.PAYMENT_DTMS }}</td>
+								<td class="center">{{ item.PAYMENT_TYPE }}</td>
+								<td class="center">{{ item.STAT_NM }}</td>
+								<td
+									class="center"
+									v-if="
+										item.CORRECT_CHECK == 'Y' &&
+										item.CORRECT_CNT == 0 &&
+										item.BRD_ORD_RN == '1'
+									"
+									:rowspan="item.BRD_ORD_CNT"
+									style="vertical-align: middle"
+								>
+									정상
+								</td>
+								<td
+									class="center color_red"
+									v-else-if="item.BRD_ORD_RN == '1'"
+									:rowspan="item.BRD_ORD_CNT"
+									style="vertical-align: middle"
+								>
+									이상
+								</td>
+								<td class="right">
+									{{ $commaNumber(item.PAYMENT_AMT) }}
+								</td>
+								<td class="right">
+									{{ $commaNumber(item.CANCEL_AMT) }}
+								</td>
+								<td
+									class="right"
+									v-show="item.INI_RN == '1'"
+									:rowspan="item.INI_CNT"
+									style="vertical-align: middle"
+								>
+									{{ $commaNumber(item.TR_AMT) }}
+								</td>
+								<td
+									class="right"
+									v-show="item.INI_RN == '1'"
+									:rowspan="item.INI_CNT"
+									style="vertical-align: middle"
+								>
+									{{ $commaNumber(item.CANCLE_TR_AMT) }}
+								</td>
+							</tr>
+
+							<!-- <tr>
+							<td class="center">이마트</td>
+							<td class="center">논현점</td>
+							<td class="center">220211024007</td>
+							<td class="center">2021-10-24 8:51</td>
+							<td class="center">신용카드</td>
+							<td class="center">취소</td>
+							<td class="center">정상</td>
+							<td class="right">-14,500</td>
+							<td class="right">1</td>
+							<td class="right">-14,500</td>
+							<td class="right">1</td>
+						</tr>
+						<tr>
+							<td class="center">스타벅스</td>
+							<td class="center">논현점</td>
+							<td class="center">220211024006</td>
+							<td class="center">2021-10-24 7:35</td>
+							<td class="center">쓱페이</td>
+							<td class="center">취소</td>
+							<td class="center color_red">이상</td>
+							<td class="right">-13,000</td>
+							<td class="right">1</td>
+							<td class="right">-12,000</td>
+							<td class="right">1</td>
+						</tr>
+						<tr>
+							<td class="center">신세계 L&B</td>
+							<td class="center">논현점</td>
+							<td class="center">220211024005</td>
+							<td class="center">2021-10-24 7:10</td>
+							<td class="center">신용카드</td>
+							<td class="center">취소</td>
+							<td class="center">정상</td>
+							<td class="right">-13,700</td>
+							<td class="right">1</td>
+							<td class="right">-13,700</td>
+							<td class="right">1</td>
+						</tr>
+						<tr>
+							<td class="center">신세계 L&B</td>
+							<td class="center">논현점</td>
+							<td class="center">220211024004</td>
+							<td class="center">2021-10-24 6:58</td>
+							<td class="center">신용카드</td>
+							<td class="center">승인</td>
+							<td class="center">정상</td>
+							<td class="right">13,700</td>
+							<td class="right">1</td>
+							<td class="right">13,700</td>
+							<td class="right">1</td>
+						</tr>
+						<tr>
+							<td class="center">이마트</td>
+							<td class="center">논현점</td>
+							<td class="center">220211024003</td>
+							<td class="center">2021-10-24 6:56</td>
+							<td class="center">신용카드</td>
+							<td class="center">승인</td>
+							<td class="center">정상</td>
+							<td class="right">14,500</td>
+							<td class="right">1</td>
+							<td class="right">14,500</td>
+							<td class="right">1</td>
+						</tr>
+						<tr>
+							<td class="center">신세계 L&B</td>
+							<td class="center">논현점</td>
+							<td class="center">220211024002</td>
+							<td class="center">2021-10-24 6:15</td>
+							<td class="center">카카오페이</td>
+							<td class="center">승인</td>
+							<td class="center">정상</td>
+							<td class="right">23,000</td>
+							<td class="right">1</td>
+							<td class="right">23,000</td>
+							<td class="right">1</td>
+						</tr>
+						<tr>
+							<td class="center">스타벅스</td>
+							<td class="center">논현점</td>
+							<td class="center">220211024001</td>
+							<td class="center">2021-10-24 6:03</td>
+							<td class="center">쓱페이</td>
+							<td class="center">승인</td>
+							<td class="center">정상</td>
+							<td class="right">13,000</td>
+							<td class="right">1</td>
+							<td class="right">13,000</td>
+							<td class="right">1</td>
+						</tr> -->
+						</tbody>
+					</table>
+				</div>
+
+				<!-- page navigation -->
+				<div class="btn-pagination">
+					<pagination
+						ref="pagination"
+						:clickFunc="$grdOrderPageMove"
+						:pageModel="srchOrderParams"
+						:totalRows="totalOrderCnt"
+						v-show="totalOrderCnt > srchOrderParams.size"
+					/>
+
+					<!-- <ul class="pagination">
+					<li><span class="page-link">&lt;&lt;</span></li>
+					<li><span class="page-link">&lt;</span></li>
+					<li>
+						<a href="javascript:void(0)" class="page-link on">1</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">2</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">3</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">4</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">5</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">6</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">7</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">8</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">9</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" class="page-link">10</a>
+					</li>
+					<li><span class="page-link">&gt;</span></li>
+					<li><span class="page-link">&gt;&gt;</span></li>
+				</ul> -->
+				</div>
+				<!-- // page navigation -->
+			</div>
+		</div>
+		<!-- //건별 PG 결제금액 대사 목록 -->
+	</div>
+</template>
+
+<script>
+import mixinAppCommon from '@/pages/app/mixin/mixinAppCommon';
+import ondemandutil from '@/plugins/commonOndemandUtils';
+import cscript from '@/plugins/commonScripts';
+import Constant from '@/plugins/constant';
+import store from '@/vuex/store';
+import tuiGridUtils from '@/plugins/customTuiGridUtils';
+import ondemandTabs from '@/components/ondemandCommon/ondemandTabs.vue';
+import cutil from '@/plugins/commonUtils';
+export default {
+	name: '',
+
+	mixins: [mixinAppCommon],
+
+	data: function () {
+		return {
+			srchParams: {
+				correctCheck: '',
+				orderStatCd: '',
+				startDate: this.$moment().add(-1, 'd').format('YYYYMMDD'),
+				endDate: this.$moment().add(-1, 'd').format('YYYYMMDD'),
+				orderNo: '',
+				brandCd: '',
+				brandNm: '',
+			},
+			srchItem: {
+				correctCheck: '',
+				orderStatCd: '',
+				startDate: this.$moment().add(-1, 'd').format('YYYYMMDD'),
+				endDate: this.$moment().add(-1, 'd').format('YYYYMMDD'),
+				orderNo: '',
+				brandCd: '',
+				brandNm: '',
+			},
+
+			srchOrderParams: {
+				pageNo: 1,
+				prevPageNo: 1,
+				size: 5,
+			},
+
+			srchDateParams: {
+				pageNo: 1,
+				prevPageNo: 1,
+				size: 6,
+			},
+
+			srchDtlItem: {
+				brandCd: '',
+				srchDate: '',
+			},
+
+			totalOrderCnt: 0,
+
+			srchBrandSelectBoxOpt: {
+				// 조회 브랜드 콤보 박스 옵션
+				elName: 'srchBrand',
+				allText: 'text',
+				allValue: 'value',
+				dataLabelNm: 'codeNm',
+				dataValueNm: 'value',
+				width: '100px',
+				data: null,
+			},
+
+			odd92001: {
+				TOT_DC_AMT: 0,
+				TOT_CANCEL_AMT: 0,
+				TOT_ACCES_CNT: 0,
+				TOT_CANCEL_CNT: 0,
+				TOT_DATE_CNT: 0,
+			},
+
+			odd92003: {
+				TOT_PAY_AMT: 0,
+				TOT_INI_AMT: 0,
+				TOT_ORDER_CNT: 0,
+				TOT_INI_CNT: 0,
+				CORRECT_CHECK: '',
+			},
+
+			totalDateCnt: 0,
+
+			odd92002List: [],
+			odd92002ListOri: [],
+
+			odd92004List: [],
+			odd92004ListOri: [],
+			brandList: [],
+
+			odd92003On: 'N',
+		};
+	},
+
+	watch: {
+		'srchParams.endDate': function (value, oldValue) {
+			if (value >= this.$moment().format('YYYYMMDD')) {
+				ondemandutil
+					.$alert('조회 종료일이 오늘 이후 일수 없습니다.')
+					.then(() => {
+						this.srchParams.endDate = oldValue;
+					});
+			}
+		},
+
+		'srchParams.startDate': function (value, oldValue) {
+			if (value >= this.$moment().format('YYYYMMDD')) {
+				ondemandutil
+					.$alert('조회 시작일이 오늘 이후 일수 없습니다.')
+					.then(() => {
+						this.srchParams.startDate = oldValue;
+					});
+			}
+		},
+	},
+
+	// watch: {
+	// 	'srchParams.startDate': function (val, oldValue) {
+	// 		if (!cscript.$isEmpty(val)) {
+	// 			if (
+	// 				val > this.srchParams.endDate ||
+	// 				val >= this.$moment().format('YYYYMMDD')
+	// 			) {
+	// 				ondemandutil
+	// 					.$alert(
+	// 						'조회 종료일이 시작일 이전 이거나 , 시작일이 오늘 이후 일수 없습니다.'
+	// 					)
+	// 					.then(() => {
+	// 						this.srchParams.startDate = oldValue;
+	// 					});
+	// 			}
+	// 		}
+	// 	},
+
+	// 	'srchParams.endDate': function (val, oldValue) {
+	// 		if (!cscript.$isEmpty(val)) {
+	// 			if (val >= this.$moment().format('YYYYMMDD')) {
+	// 				ondemandutil
+	// 					.$alert('조회 종료일이 오늘 이후 일수 없습니다.')
+	// 					.then(() => {
+	// 						this.srchParams.endDate = oldValue;
+	// 					});
+	// 			}
+	// 		}
+	// 	},
+	// },
+
+	mounted: function () {
+		const _refs = this.$refs; //ref들
+		this.grd = _refs.grd; //그리드
+		this.grdDetail = _refs.grdDetail;
+		(async (_) => {
+			const ondemandParam = ['BRD01']; // 리스트 구분 코드
+			const ondemandCmnCodeList = await ondemandutil.$getSrchCmmnCodes(
+				ondemandParam
+			);
+
+			this.brandList = ondemandCmnCodeList.BRD01;
+
+			this.srchBrandSelectBoxOpt.data = cscript.$getComboOptions(
+				ondemandCmnCodeList.BRD01,
+				{ head: 'A' }
+			);
+
+			this.$fnInquire();
+		})();
+	},
+
+	methods: {
+		async $fnInquire() {
+			if (
+				this.$moment(this.srchParams.endDate).diff(
+					this.$moment(this.srchParams.startDate),
+					'days'
+				) > 31
+			) {
+				ondemandutil.$alert('기간 조회는 한달간격 입니다.');
+				return false;
+			}
+
+			if (
+				this.$moment().diff(
+					this.$moment(this.srchParams.endDate),
+					'days'
+				) <= 0
+			) {
+				ondemandutil
+					.$alert('금일 이전 주문만 검색 가능 합니다.')
+					.then(() => {
+						this.srchParams.endDate = this.$moment()
+							.add(-1, 'd')
+							.format('YYYYMMDD');
+					});
+				return false;
+			}
+
+			if (
+				this.$moment(this.srchParams.endDate).diff(
+					this.$moment(this.srchParams.startDate),
+					'days'
+				) < 0
+			) {
+				ondemandutil
+					.$alert('조회 시작일이 조회 종료일 이후 일 수 없습니다.')
+					.then(() => {
+						this.srchParams.endDate = this.$moment()
+							.add(-1, 'd')
+							.format('YYYYMMDD');
+					});
+				return false;
+			}
+			this.srchItem = this._.cloneDeep(this.srchParams);
+
+			this.srchOrderParams.pageNo = 1;
+			this.srchDateParams.pageNo = 1;
+
+			for (let item of this.srchBrandSelectBoxOpt.data) {
+				if (item.codeValue == this.srchItem.brandCd) {
+					this.srchItem.brandNm = cscript.$isEmpty(item.codeNm)
+						? item.text
+						: item.codeNm;
+				} else if (item.value == this.srchItem.brandCd) {
+					this.srchItem.brandNm = cscript.$isEmpty(item.codeNm)
+						? item.text
+						: item.codeNm;
+				}
+			}
+			this.odd92003On = 'N';
+			await this.$odd92001();
+
+			// await this.$odd92003();
+			// await this.$odd92004();
+		},
+
+		async $odd92001() {
+			const url = '/ondemandapi/odd92000/odd92001';
+			let params = this._.cloneDeep(this.srchItem);
+			await this.$axios.post(url, params).then(async (response) => {
+				this.log(url, response);
+				if (response.RET_CD == '0000') {
+					this.odd92001 = this._.cloneDeep(response);
+					this.$odd92002();
+				} else {
+					ondemandutil.$alert(response.RET_MSG);
+				}
+			});
+		},
+
+		async $odd92002() {
+			const url = '/ondemandapi/odd92000/odd92002';
+			let params = this._.cloneDeep(this.srchItem);
+			params.pageNo = this.srchDateParams.pageNo;
+			params.pageSize = this.srchDateParams.size;
+			params.prevPageNo = this.srchDateParams.prevPageNo;
+			this.log(url, params);
+			await this.$axios.post(url, params).then(async (response) => {
+				this.log(url, response);
+				if (response.RET_CD == '0000') {
+					this.odd92002List = this._.cloneDeep(response.list);
+					if (
+						response.list != null &&
+						response.list != undefined &&
+						response.list.length > 0
+					) {
+						this.totalDateCnt = response.list[0].TOT_CNT;
+					} else {
+						this.totalDateCnt = 0;
+					}
+				} else {
+					ondemandutil.$alert(response.RET_MSG);
+				}
+			});
+		},
+
+		async $rowClick(item, index) {
+			this.srchDtlItem = this._.cloneDeep(this.srchItem);
+			this.srchDtlItem.brandCd = item.BRAND_CD;
+			this.log(item.PAYMENT_DTMS);
+			this.srchDtlItem.srchDate = this.$moment(item.PAYMENT_DTMS).format(
+				'YYYYMMDD'
+			);
+			this.log(this.srchDtlItem.srchDate);
+			this.odd92003On = 'Y';
+			this.srchOrderParams.pageNo = 1;
+			this.$odd92003();
+		},
+
+		async $odd92003() {
+			const url = '/ondemandapi/odd92000/odd92003';
+			let params = this._.cloneDeep(this.srchDtlItem);
+			await this.$axios.post(url, params).then(async (response) => {
+				this.log(url, response);
+				if (response.RET_CD == '0000') {
+					this.odd92003 = this._.cloneDeep(response);
+					this.log(this.odd92003);
+					this.$odd92004();
+				} else {
+					ondemandutil.$alert(response.RET_MSG);
+				}
+			});
+		},
+
+		async $odd92004() {
+			const url = '/ondemandapi/odd92000/odd92004';
+			let params = this._.cloneDeep(this.srchDtlItem);
+			params.pageNo = this.srchOrderParams.pageNo;
+			params.pageSize = this.srchOrderParams.size;
+			params.prevPageNo = this.srchOrderParams.prevPageNo;
+			this.log(url, params);
+			await this.$axios.post(url, params).then(async (response) => {
+				this.log(url, response);
+				if (response.RET_CD == '0000') {
+					this.odd92004List = this._.cloneDeep(response.list);
+					if (
+						response.list != null &&
+						response.list != undefined &&
+						response.list.length > 0
+					) {
+						this.totalOrderCnt = response.list[0].TOT_CNT;
+					} else {
+						this.totalOrderCnt = 0;
+					}
+				} else {
+					ondemandutil.$alert(response.RET_MSG);
+				}
+			});
+		},
+
+		$grdOrderPageMove() {
+			this.$odd92004();
+		},
+
+		$grdDatePageMove() {
+			this.odd92003On = 'N';
+			this.$odd92002();
+		},
+
+		$brandExcel() {
+			if (this.totalDateCnt > 0) {
+				/*				const url = '/ondemandapi/odd92000/odd92005';
+				var query = '';
+				var separator = '?';
+				for (var key in this.srchItem) {
+					query += separator + key + '=' + this.srchItem[key];
+					separator = '&';
+				}
+				location.href = url + query;
+			}*/
+				const url = '/ondemandapi/odd92000/odd92005';
+				let config = this._.cloneDeep(this.srchParams);
+				console.log('====== odd92005, params: ', config);
+				this.$axios
+					.post(url, config)
+					.then((res) => {
+						console.log('odd92005 res: ', res);
+						let fileName =
+							'ONDEMAND_BRAND_SETTLE_LIST_' +
+							this.$moment().format('YYYYMMDDHHmmSS') +
+							'.xls';
+						config.fileName = fileName;
+						cutil.$downloadFileFromUrl(url, config);
+					})
+					.catch((error) => {
+						console.log('odd92005 error: ', error);
+					}); // end axios
+			}
+		},
+
+		$orderExcel() {
+			if (this.totalOrderCnt > 0) {
+				const url = '/ondemandapi/odd92000/odd92006';
+				const config = this._.cloneDeep(this.srchDtlItem);
+				// let selectList = this._.cloneDeep(this.selectList);
+				// config.odd66000List = selectList;
+				let fileName =
+					'ONDEMAND_ORDER_SETTLE_LIST_' +
+					this.$moment().format('YYYYMMDDHHmmSS') +
+					'.xls';
+				config.fileName = fileName;
+				this.log('config >>>>>>>>>> ', config);
+				cutil.$downloadFileFromUrl(url, config);
+			}
+		},
+	},
+};
+</script>
+
+<style scoped>
+::v-deep .form_table {
+	margin-bottom: 0;
+}
+
+::v-deep .form_table.side_line thead tr th {
+	border-left: 1px solid #e3dcd7;
+}
+
+::v-deep .form_table.side_line thead tr:first-child th {
+	border-top: 1px solid #827269;
+}
+
+::v-deep .form_table > table > thead > tr:last-child > th {
+	border-bottom: 0;
+}
+
+::v-deep .form_table.side_line thead tr:first-child th:first-child {
+	border-left: 0;
+}
+
+::v-deep .form_table.side_line thead tr:last-child th:first-child {
+	border-left: 0;
+}
+
+::v-deep
+	.form_table.form_table.side_line.case_table
+	thead
+	tr:last-child
+	th:first-child {
+	border-left: 1px solid #e3dcd7;
+}
+
+::v-deep
+	.form_table.form_table.side_line.case_table
+	thead
+	tr:first-child
+	th[rowspan] {
+	border-bottom: 0px;
+}
+
+::v-deep .form_table > table > tbody > tr.bg_beige > td {
+	background: #fef5ea;
+	color: #8e7261;
+	border-top: 1px solid #bbb2ac;
+	border-bottom: 1px solid #bbb2ac;
+	font-weight: bold;
+}
+
+::v-deep .btn-pagination {
+	padding-bottom: 40px;
+}
+</style>
